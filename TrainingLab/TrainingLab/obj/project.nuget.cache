@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "GjUT9TxWLZYlOk3Qwlo1qgx8cvTwC/jLck051GmpzytNPBUdZQ2ROTEfAUWFOyczsRaVlZiwZ53wQc9owB6suA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\TraninngLab\\BackEnd\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
+  "expectedPackageFiles": [
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
+    "C:\\Users\\HIMANI\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\6.11.1\\microsoft.identitymodel.jsonwebtokens.6.11.1.nupkg.sha512",
+    "C:\\Users\\HIMANI\\.nuget\\packages\\microsoft.identitymodel.logging\\6.11.1\\microsoft.identitymodel.logging.6.11.1.nupkg.sha512",
+    "C:\\Users\\HIMANI\\.nuget\\packages\\microsoft.identitymodel.tokens\\6.11.1\\microsoft.identitymodel.tokens.6.11.1.nupkg.sha512",
+    "C:\\Users\\HIMANI\\.nuget\\packages\\stub.system.data.sqlite.core.netstandard\\1.0.114.2\\stub.system.data.sqlite.core.netstandard.1.0.114.2.nupkg.sha512",
+    "C:\\Users\\HIMANI\\.nuget\\packages\\system.data.sqlite.core\\1.0.114.2\\system.data.sqlite.core.1.0.114.2.nupkg.sha512",
+    "C:\\Users\\HIMANI\\.nuget\\packages\\system.identitymodel.tokens.jwt\\6.11.1\\system.identitymodel.tokens.jwt.6.11.1.nupkg.sha512",
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.security.cryptography.cng\\4.5.0\\system.security.cryptography.cng.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
