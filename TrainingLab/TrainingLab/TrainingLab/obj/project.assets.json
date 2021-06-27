@@ -1618,23 +1618,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\HIMANI\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\richa\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
+      "projectUniqueName": "C:\\Users\\richa\\source\\repos\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
       "projectName": "TrainingLab",
-      "projectPath": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
-      "packagesPath": "C:\\Users\\HIMANI\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\obj\\",
+      "projectPath": "C:\\Users\\richa\\source\\repos\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
+      "packagesPath": "C:\\Users\\richa\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\richa\\source\\repos\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\HIMANI\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\richa\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1699,7 +1695,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.300\\RuntimeIdentifierGraph.json"
       }
     }
   }

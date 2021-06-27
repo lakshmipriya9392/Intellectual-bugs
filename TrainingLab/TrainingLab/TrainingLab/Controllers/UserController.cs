@@ -22,11 +22,11 @@ namespace TrainingLab.Controllers
 
         private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger, IJWTAuthenticationManager jWTAuthenticationManager)
+       /* public UserController(ILogger<UserController> logger, IJWTAuthenticationManager jWTAuthenticationManager)
         {
             _logger = logger;
             this.jWTAuthenticationManager = jWTAuthenticationManager;
-        }
+        }*/
 
 
 
