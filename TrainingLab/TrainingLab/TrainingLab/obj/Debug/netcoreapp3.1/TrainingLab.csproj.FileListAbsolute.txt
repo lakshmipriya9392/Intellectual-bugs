@@ -179,3 +179,36 @@ C:\Users\HIMANI\Desktop\Perspectify Internship\Training Lab\Intellectual-bugs\Tr
 C:\Users\HIMANI\Desktop\Perspectify Internship\Training Lab\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.RazorTargetAssemblyInfo.cache
 C:\Users\HIMANI\Desktop\Perspectify Internship\Training Lab\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.csproj.CopyComplete
 C:\Users\HIMANI\Desktop\Perspectify Internship\Training Lab\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.genruntimeconfig.cache
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\appsettings.Development.json
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\appsettings.json
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\TrainingLab.exe
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\TrainingLab.deps.json
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\TrainingLab.runtimeconfig.json
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\TrainingLab.runtimeconfig.dev.json
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\TrainingLab.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\TrainingLab.pdb
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Logging.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Tokens.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\System.Data.SQLite.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\runtimes\linux-x64\native\SQLite.Interop.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\runtimes\osx-x64\native\SQLite.Interop.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\SQLite.Interop.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\SQLite.Interop.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.csproj.AssemblyReference.cache
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.AssemblyInfoInputs.cache
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.AssemblyInfo.cs
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.csproj.CoreCompileInputs.cache
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\staticwebassets\TrainingLab.StaticWebAssets.Manifest.cache
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\staticwebassets\TrainingLab.StaticWebAssets.xml
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\scopedcss\bundle\TrainingLab.styles.css
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.RazorTargetAssemblyInfo.cache
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.csproj.CopyComplete
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.dll
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.pdb
+C:\Users\richa\source\repos\Intellectual-bugs\TrainingLab\TrainingLab\TrainingLab\obj\Debug\netcoreapp3.1\TrainingLab.genruntimeconfig.cache

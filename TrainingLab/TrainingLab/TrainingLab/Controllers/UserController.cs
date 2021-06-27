@@ -4,29 +4,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Data.SQLite;
-//using WebApplication3;
 using Microsoft.AspNetCore.Authorization;
 using TrainingLab.Models;
 
 
 namespace TrainingLab.Controllers
 {
-    [Authorize]
+  //  [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab";
-        SQLiteConnection con = new SQLiteConnection("Data Source=" + path + "\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
-        private readonly IJWTAuthenticationManager jWTAuthenticationManager;
-
+        SQLiteConnection con = new SQLiteConnection("Data Source=C:\\Users\\richa\\source\\repos\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
+        // private readonly IJWTAuthenticationManager jWTAuthenticationManager;
         private readonly ILogger<UserController> _logger;
 
-       /* public UserController(ILogger<UserController> logger, IJWTAuthenticationManager jWTAuthenticationManager)
+        /* public UserController(ILogger<UserController> logger, IJWTAuthenticationManager jWTAuthenticationManager)
+         {
+             _logger = logger;
+             this.jWTAuthenticationManager = jWTAuthenticationManager;
+         }*/
+        public UserController(ILogger<UserController> logger)
         {
             _logger = logger;
-            this.jWTAuthenticationManager = jWTAuthenticationManager;
-        }*/
+        }
 
 
 
@@ -92,35 +93,16 @@ namespace TrainingLab.Controllers
                 {
                     user.emailId = dr.GetString(0);
                     user.name = dr.GetString(1);
-                    user.password = dr.GetString(3);
+                    user.password = dr.GetString(2);
                 }
             }
             dr.Close();
             con.Close();
             return CreatedAtAction(nameof(Create), user);
-            /*SQLiteDataReader dr = cmd.ExecuteReader();
-             List<string> studentData = new List<string>();
-             int a = dr.FieldCount;
-             if (dr.HasRows)
-             {
-                 while (dr.Read())
-                 {
-                     studentData.Add("Name: " + dr["name"].ToString());
-                     studentData.Add("email: " + dr["email"].ToString());
-                     studentData.Add("password: " + Crypto.Encryptor.Decrypt(dr["password"].ToString()));
-
-                 }
-             }
-             dr.Close();
-             con.Close();
-             return (IActionResult)studentData;*/
-
-
-            con.Close();
             return CreatedAtAction(nameof(Signin), user);
         }
 
-        [AllowAnonymous]
+       /* [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserModel user)
         {
@@ -131,7 +113,7 @@ namespace TrainingLab.Controllers
 
             return Ok(token);
         }
-
+*/
         /*public class UserCred
           {
               public string email { get; set; }

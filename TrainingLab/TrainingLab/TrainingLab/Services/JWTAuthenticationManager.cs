@@ -1,4 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿/*using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -16,12 +16,6 @@ namespace TrainingLab
 
     public class JWTAuthenticationManager : IJWTAuthenticationManager
     {
-        /*  IDictionary<string, string> users = new Dictionary<string, string>
-          {
-              { "test1", "password1" },
-              { "test2", "password2" }
-          };*/
-
         private readonly string tokenKey;
 
         public JWTAuthenticationManager(string tokenKey)
@@ -46,11 +40,7 @@ namespace TrainingLab
 
             }
 
-            /* if (!users.Any(u => u.Key == email && u.Value == password))
-             {
-                 return null;
-             }*/
-
+           
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(tokenKey);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -68,4 +58,4 @@ namespace TrainingLab
             return tokenHandler.WriteToken(token);
         }
     }
-}
+}*/
