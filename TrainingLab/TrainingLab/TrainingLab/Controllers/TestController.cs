@@ -14,7 +14,7 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class TestController : Controller
     {
-        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\TraninngLab\\BackEnd";
+        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab";
         SQLiteConnection con = new SQLiteConnection("Data Source="+path+"\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
         SQLiteCommand cmd = new SQLiteCommand();
         SQLiteCommand cmdd = new SQLiteCommand();

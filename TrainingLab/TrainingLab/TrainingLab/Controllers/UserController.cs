@@ -16,7 +16,7 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        public static string path = "C:\\Users\\HIMANI\\Downloads";
+        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab";
         SQLiteConnection con = new SQLiteConnection("Data Source=" + path + "\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
         private readonly IJWTAuthenticationManager jWTAuthenticationManager;
 
@@ -68,6 +68,7 @@ namespace TrainingLab.Controllers
             con.Open();
             cmd.CommandText = "INSERT INTO User(Name,EmailId,Password) VALUES('" + user.name + "','" + user.emailId + "','" + Crypto.Encryptor.Encrypt(user.password) + "')";
             int result = cmd.ExecuteNonQuery();
+            user.password = Crypto.Encryptor.Encrypt(user.password);
             con.Close();
             return CreatedAtAction(nameof(Create), user);
 

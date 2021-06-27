@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\HIMANI\\Downloads\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {}
+    "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {}
   },
   "projects": {
-    "C:\\Users\\HIMANI\\Downloads\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {
+    "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\HIMANI\\Downloads\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
+        "projectUniqueName": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
         "projectName": "TrainingLab",
-        "projectPath": "C:\\Users\\HIMANI\\Downloads\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
+        "projectPath": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
         "packagesPath": "C:\\Users\\HIMANI\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\HIMANI\\Downloads\\TrainingLab\\TrainingLab\\obj\\",
+        "outputPath": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

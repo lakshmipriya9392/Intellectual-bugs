@@ -11,7 +11,7 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class EventController : Controller
     {
-        public static string path = "C:\\Users\\HIMANI\\OneDrive\\BackEnd";
+        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab";
         SQLiteConnection con = new SQLiteConnection("Data Source="+path+"\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
         SQLiteCommand cmd = new SQLiteCommand();
         SQLiteCommand cmdd = new SQLiteCommand();        
@@ -124,7 +124,7 @@ namespace TrainingLab.Controllers
 
         public async void getEventAttendee(int i, EventModel[] eventModel, string eventName)
         {
-            cmdd.CommandText = "select u.FirstName, u.LastName,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.EventName='" + eventName + "'";
+            cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.EventName='" + eventName + "'";
             SQLiteDataReader dr2 = cmdd.ExecuteReader();
             eventModel[i].Panelists = "";
             eventModel[i].Attendee = "";
@@ -139,7 +139,7 @@ namespace TrainingLab.Controllers
                         {
                             eventModel[i].Panelists += ",";
                         }
-                        eventModel[i].Panelists += dr2["FirstName"] + " " + dr2["LastName"];
+                        eventModel[i].Panelists += dr2["Name"];
                     }
                     else
                     {
@@ -147,7 +147,7 @@ namespace TrainingLab.Controllers
                         {
                             eventModel[i].Attendee += ",";
                         }
-                        eventModel[i].Attendee += dr2["FirstName"] + " " + dr2["LastName"];
+                        eventModel[i].Attendee += dr2["Name"];
                     }
                     j++;
                 }
