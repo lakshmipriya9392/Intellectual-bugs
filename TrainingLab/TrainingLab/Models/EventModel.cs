@@ -10,8 +10,8 @@ namespace TrainingLab.Models
         public int EventId { get; set; }
         public string EventName { get; set; }
         public string EventURL { get; set; }
-        public string StartTime { get; set; }
-        public string EndTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public string Description { get; set; }
         public string Panelists { get; set; }
         public string Attendee { get; set; }

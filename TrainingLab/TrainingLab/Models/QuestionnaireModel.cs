@@ -9,7 +9,7 @@ namespace TrainingLab.Models
     {
         public int questionId { get; set; }       
         public string question { get; set; }
-        public string optionList { get; set; }
+        public OptionModel optionList { get; set; }
         public string answer { get; set; }
         public string typeOfQuestion { get; set; }
         public int testId { get; set; }

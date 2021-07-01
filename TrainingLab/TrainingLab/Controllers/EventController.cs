@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Globalization;
+using System.Threading.Tasks;
 using TrainingLab.Models;
 
 namespace TrainingLab.Controllers
@@ -19,56 +20,32 @@ namespace TrainingLab.Controllers
 
 
         [HttpGet]
-        public EventModel[] Get([FromQuery] int id)
+        public async Task<IEnumerable<EventModel>>  Get([FromQuery] int id)
         {
             cmd.Connection = con;
             cmdd.Connection = con;
             con.Open();
-            int size = 0;
             if (id >0)
-            {
-                cmd.CommandText = "select count(*) from Event where Id='" + id + "'";
-                dr = cmd.ExecuteReader();
-                if (dr.HasRows)
-                {
-                    while (dr.Read())
-                    {
-                        size = dr.GetInt32(0);
-                    }
-                }
-
-                dr.Close();
-                cmd.CommandText = "select * from Event where Id='" + id + "'";
-               
+            {               
+                cmd.CommandText = "select * from Event where Id='" + id + "'";               
             }
             else
-            {
-                cmd.CommandText = "select count(*) from Event";
-                dr = cmd.ExecuteReader();
-                if (dr.HasRows)
-                {
-                    while (dr.Read())
-                    {
-                        size = dr.GetInt32(0);
-                    }
-                }
-
-                dr.Close();
+            {               
                 cmd.CommandText = "select * from Event";
             }
             dr = cmd.ExecuteReader();
-            EventModel[] eventModel = new EventModel[size];
+            List<EventModel> eventModel = new List<EventModel>();
             int i = 0;
             if (dr.HasRows)
             {
                 while (dr.Read())
                 {
-                    eventModel[i] = new EventModel();
-                    getEventAttendee(i, eventModel, dr["EventName"].ToString());
+                    eventModel.Add(new EventModel());
+                    await getEventAttendee(i, eventModel, dr["EventName"].ToString());
                     eventModel[i].EventId = dr.GetInt32(0);
                     eventModel[i].EventName = dr.GetString(1);
-                    eventModel[i].StartTime = dr.GetString(2);
-                    eventModel[i].EndTime = dr.GetString(3);
+                    eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
+                    eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
                     eventModel[i].Description = dr.GetString(4);
                     eventModel[i].EventURL = dr.GetString(5);
                     i++;
@@ -80,38 +57,27 @@ namespace TrainingLab.Controllers
         }
 
         [HttpGet("FutureEvents")]
-        public EventModel[] GetFutureEvent()
+        public async Task<IEnumerable<EventModel>>  GetFutureEvent()
         {
 
             cmd.Connection = con;
             cmdd.Connection = con;
             con.Open();
-            int size = 0;
-            cmd.CommandText = "select count(*) from Event where StartTime>='" + System.DateTime.UtcNow.AddHours(5.50) + "'";
-            SQLiteDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    size = dr.GetInt32(0);
-                }
-            }
-
-            dr.Close();
-            cmd.CommandText = "select * from Event where StartTime>='" + System.DateTime.UtcNow.AddHours(5.50) + "'";
+            cmd.CommandText = "select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "'";
             dr = cmd.ExecuteReader();
-            EventModel[] eventModel = new EventModel[size];
+            List<EventModel> eventModel = new List<EventModel>();
             int i = 0;
             if (dr.HasRows)
             {
                 while (dr.Read())
                 {
-                    eventModel[i] = new EventModel();
-                    getEventAttendee(i, eventModel, dr["EventName"].ToString());
+                    eventModel.Add(new EventModel());
+                    Console.WriteLine(eventModel.Count);
+                    await getEventAttendee(i, eventModel, dr["EventName"].ToString());
                     eventModel[i].EventId = dr.GetInt32(0);
                     eventModel[i].EventName = dr.GetString(1);
-                    eventModel[i].StartTime = dr.GetString(2);
-                    eventModel[i].EndTime = dr.GetString(3);
+                    eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
+                    eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
                     eventModel[i].Description = dr.GetString(4);
                     eventModel[i].EventURL = dr.GetString(5);
                     i++;
@@ -122,7 +88,7 @@ namespace TrainingLab.Controllers
             return eventModel;
         }
 
-        public async void getEventAttendee(int i, EventModel[] eventModel, string eventName)
+        public async Task<IActionResult> getEventAttendee(int i, List<EventModel> eventModel, string eventName)
         {
             cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.EventName='" + eventName + "'";
             SQLiteDataReader dr2 = cmdd.ExecuteReader();
@@ -153,6 +119,29 @@ namespace TrainingLab.Controllers
                 }
             }
             dr2.Close();
+            return Ok();
+        }
+        [HttpPost]
+        public IActionResult addEvent(EventModel eventModel)
+        {
+            cmd.Connection = con;
+            try
+            {
+                con.Open();
+                cmd.CommandText = "INSERT INTO Event(EventName,StartTime,EndTime,Description,EventURL) VALUES (@eventName,@startTime,@endTime,@description,@eventURL)";
+                cmd.Parameters.AddWithValue("@eventName", eventModel.EventName);
+                cmd.Parameters.AddWithValue("@startTime", eventModel.StartTime);
+                cmd.Parameters.AddWithValue("@endTime", eventModel.EndTime);
+                cmd.Parameters.AddWithValue("@description", eventModel.Description);
+                cmd.Parameters.AddWithValue("@eventURL", eventModel.EventURL);
+                int rowsAffected = cmd.ExecuteNonQuery();
+                con.Close();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return (IActionResult)e;
+            }
         }
     }
 }

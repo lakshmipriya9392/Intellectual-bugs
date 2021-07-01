@@ -20,7 +20,7 @@ namespace TrainingLab.Controllers
         SQLiteCommand cmdd = new SQLiteCommand();
 
         [HttpGet]
-        public IActionResult GetCourses(int id)
+        public async Task<IActionResult> GetCourses(int id)
         {
             cmd.Connection = con;
             cmdd.Connection = con;

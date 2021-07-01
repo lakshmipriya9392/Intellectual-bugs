@@ -20,9 +20,11 @@ namespace TrainingLab.Controllers
         SQLiteCommand cmdd = new SQLiteCommand();
         static int testId = 0;
         [HttpGet]
-        public IActionResult Get([FromQuery] string id, [FromQuery] string levelName)
+
+        public async Task<IActionResult> Get([FromQuery] string id, [FromQuery] string levelName)
         {
             cmd.Connection = con;
+            cmdd.Connection = con;
             con.Open();
             int size = 0;
             if (id == null)
@@ -64,34 +66,49 @@ namespace TrainingLab.Controllers
                 SQLiteDataReader dr = cmd.ExecuteReader();
                 int i = 0;
                 StringBuilder sb = new StringBuilder();
+                List<QuestionnaireModel> questionnaireModel = new List<QuestionnaireModel>();
                 sb.Append("[");
                 if (dr.HasRows)
                 {
                     while (dr.Read())
                     {
-                        testId = dr.GetInt32(1);
-                        if (i != 0)
-                            sb.Append(",");
-                        sb.Append("{\"questionId\":\"" + dr.GetInt32(0) + "\",");
-                        sb.Append("\"testId\":\"" + testId + "\",");
-                        sb.Append("\"question\":\"" + dr["QuestionText"].ToString() + "\"");
-                        sb.Append("," + dr["OptionList"].ToString()+"}");
-                        i++;
+                        questionnaireModel.Add(new QuestionnaireModel());
+                        questionnaireModel[i].questionId = dr.GetInt32(0);
+                        questionnaireModel[i].testId = dr.GetInt32(1);
+                        questionnaireModel[i].question = dr.GetString(3);
+                       
+                        cmdd.CommandText = "select * from Options where QuestionId='" + questionnaireModel[i].questionId + "'";
+                        SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
+                        OptionModel optionModel = new OptionModel();
+                        if(sQLiteDataReader.HasRows)
+                        {
+                            while(sQLiteDataReader.Read())
+                            {
+                                optionModel.optionA = sQLiteDataReader.GetString(1);
+                                optionModel.optionB = sQLiteDataReader.GetString(2);
+                                optionModel.optionC = sQLiteDataReader.GetString(3);
+                                optionModel.optionD = sQLiteDataReader.GetString(4);
+                                optionModel.questionId = sQLiteDataReader.GetInt32(5);
+                            }
+                        }
+                        sQLiteDataReader.Close();
+                        questionnaireModel[i].optionList = optionModel;
+                        i++;                        
                     }
                 }
                 sb.Append("]");
                 dr.Close();
                 con.Close();
-                return CreatedAtAction(nameof(Get), sb.ToString());
+                return CreatedAtAction(nameof(Get), questionnaireModel);
             }
         }
         public static int score = 0;
         [HttpPost]
-        public IActionResult PostAnswer(int id, string answer, string emailId)
+        public async Task<IActionResult> PostAnswer(int id, string answer, string emailId)
         {
-               return CreatedAtAction(nameof(PostAnswer),CheckAnswer(id, answer, emailId));
+               return CreatedAtAction(nameof(PostAnswer),await CheckAnswer(id, answer, emailId));
         }
-        public string CheckAnswer(int id, string answer, string emailId)
+        public async Task<string> CheckAnswer(int id, string answer, string emailId)
         {
 
             cmd.Connection = con;
@@ -146,14 +163,37 @@ namespace TrainingLab.Controllers
             int i = 0,rowsAffected=0;
             while (i < questionnaireModels.Length)
             {
-                cmd.CommandText = "INSERT INTO Questionnaire(QuestionText,OptionList,TypeOfQuestion,CorrectAnswer,TestId) VALUES('"+questionnaireModels[i].question+"','"+questionnaireModels[i].optionList+"','"+questionnaireModels[i].typeOfQuestion+"','"+questionnaireModels[i].answer+"','"+questionnaireModels[i].testId+"')";
+                cmd.CommandText = "INSERT INTO Questionnaire(QuestionText,TypeOfQuestion,CorrectAnswer,TestId) VALUES('"+questionnaireModels[i].question+"','"+questionnaireModels[i].typeOfQuestion+"','"+questionnaireModels[i].answer+"','"+questionnaireModels[i].testId+"')";
                 rowsAffected = cmd.ExecuteNonQuery();
-                if(rowsAffected>0)
+                if(rowsAffected<0)
                 {
                     break;
                 }
+                i++;
             }
             if(rowsAffected>0)
+            {
+                return Ok();
+            }
+            return CreatedAtAction(nameof(PostQuestion), "Not inserted");
+        }
+        [HttpPost("postOption")]
+        public async Task<IActionResult> PostOptions(OptionModel[] optionModels)
+        {
+            cmd.Connection = con;
+            con.Open();
+            int i = 0, rowsAffected = 0;
+            while (i < optionModels.Length)
+            {
+                cmd.CommandText = "INSERT INTO Options(OptionA,OptionB,OptionC,OptionD,QuestionId) VALUES('" + optionModels[i].optionA + "','" + optionModels[i].optionB + "','" + optionModels[i].optionC + "','" + optionModels[i].optionD + "','"+optionModels[i].questionId+"')";
+                rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected < 0)
+                {
+                    break;
+                }
+                i++;
+            }
+            if (rowsAffected > 0)
             {
                 return Ok();
             }
