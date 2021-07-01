@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {}
+    "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {}
   },
   "projects": {
-    "E:\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {
+    "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
+        "projectUniqueName": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
         "projectName": "TrainingLab",
-        "projectPath": "E:\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
+        "projectPath": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab.csproj",
         "packagesPath": "C:\\Users\\HIMANI\\.nuget\\packages\\",
-        "outputPath": "E:\\TrainingLab\\TrainingLab\\obj\\",
+        "outputPath": "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs\\TrainingLab\\TrainingLab\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

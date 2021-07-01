@@ -7,9 +7,11 @@ namespace TrainingLab.Models
 {
     public class QuestionnaireModel
     {
-        public int QuestionId { get; set; }       
-        public string Question { get; set; }
-        public string OptionList { get; set; }
-        public string Answer { get; set; }
+        public int questionId { get; set; }       
+        public string question { get; set; }
+        public string optionList { get; set; }
+        public string answer { get; set; }
+        public string typeOfQuestion { get; set; }
+        public int testId { get; set; }
     }
 }
