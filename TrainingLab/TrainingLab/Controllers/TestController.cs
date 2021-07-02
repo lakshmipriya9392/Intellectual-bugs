@@ -65,9 +65,7 @@ namespace TrainingLab.Controllers
                 cmd.CommandText = "select q.Id,t.Id,l.LevelName,q.QuestionText,q.OptionList,q.CorrectAnswer from Test t inner join Course c on c.Id=t.CourseId inner join Questionnaire q on t.Id=q.TestId inner join Level l on l.Id=t.LevelId where c.Id='" + id + "' and l.LevelName='" + levelName + "'";
                 SQLiteDataReader dr = cmd.ExecuteReader();
                 int i = 0;
-                StringBuilder sb = new StringBuilder();
                 List<QuestionnaireModel> questionnaireModel = new List<QuestionnaireModel>();
-                sb.Append("[");
                 if (dr.HasRows)
                 {
                     while (dr.Read())
@@ -96,7 +94,6 @@ namespace TrainingLab.Controllers
                         i++;                        
                     }
                 }
-                sb.Append("]");
                 dr.Close();
                 con.Close();
                 return CreatedAtAction(nameof(Get), questionnaireModel);
