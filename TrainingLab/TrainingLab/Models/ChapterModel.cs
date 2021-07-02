@@ -10,6 +10,6 @@ namespace TrainingLab.Models
         public int chapterId { get; set; }
 
         public string chapterName { get; set; }
-        public TopicModel[] topics { get; set; }
+        public List<TopicModel> topics { get; set; }
     }
 }

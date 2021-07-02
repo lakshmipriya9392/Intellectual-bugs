@@ -43,7 +43,7 @@ namespace TrainingLab.Controllers
                     eventModel.Add(new EventModel());
                     await getEventAttendee(i, eventModel, dr["EventName"].ToString());
                     eventModel[i].EventId = dr.GetInt32(0);
-                    eventModel[i].EventName = dr.GetString(1);
+                    eventModel[i].EventName = dr.GetString(1);                    
                     eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
                     eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
                     eventModel[i].Description = dr.GetString(4);
@@ -59,7 +59,6 @@ namespace TrainingLab.Controllers
         [HttpGet("FutureEvents")]
         public async Task<IEnumerable<EventModel>>  GetFutureEvent()
         {
-
             cmd.Connection = con;
             cmdd.Connection = con;
             con.Open();

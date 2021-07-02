@@ -25,79 +25,78 @@ namespace TrainingLab.Controllers
         {
             cmd.Connection = con;
             cmdd.Connection = con;
-            con.Open();
-            int size = 0;
+            con.Open();            
             if (id == null)
             {
-                cmd.CommandText = "select count(*) from Course";
-                SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
-                if (sQLiteDataReader.HasRows)
-                {
-                    while (sQLiteDataReader.Read())
-                    {
-                        size = sQLiteDataReader.GetInt32(0);
-                    }
-                }
-                sQLiteDataReader.Close();
-                cmd.CommandText = "select * from Course";
-                sQLiteDataReader = cmd.ExecuteReader();
-                int i = 0;
-                CourseModel[] courseModel = new CourseModel[size];
-
-                if (sQLiteDataReader.HasRows)
-                {
-                    while (sQLiteDataReader.Read())
-                    {
-                        courseModel[i] = new CourseModel();
-                        courseModel[i].CourseId = int.Parse(sQLiteDataReader["Id"].ToString());
-                        courseModel[i].CourseName = sQLiteDataReader["CourseName"].ToString();
-                        courseModel[i].AuthorName = sQLiteDataReader["AuthorName"].ToString();
-                        courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
-                        i++;
-                    }
-                }
-                sQLiteDataReader.Close();
-                con.Close();
-                return CreatedAtAction(nameof(Get), courseModel);
+                return CreatedAtAction(nameof(Get), await GetCourseDetails());               
             }
             else
             {
-                cmd.CommandText = "select q.Id,t.Id,l.LevelName,q.QuestionText,q.OptionList,q.CorrectAnswer from Test t inner join Course c on c.Id=t.CourseId inner join Questionnaire q on t.Id=q.TestId inner join Level l on l.Id=t.LevelId where c.Id='" + id + "' and l.LevelName='" + levelName + "'";
-                SQLiteDataReader dr = cmd.ExecuteReader();
-                int i = 0;
-                List<QuestionnaireModel> questionnaireModel = new List<QuestionnaireModel>();
-                if (dr.HasRows)
-                {
-                    while (dr.Read())
-                    {
-                        questionnaireModel.Add(new QuestionnaireModel());
-                        questionnaireModel[i].questionId = dr.GetInt32(0);
-                        questionnaireModel[i].testId = dr.GetInt32(1);
-                        questionnaireModel[i].question = dr.GetString(3);
-                       
-                        cmdd.CommandText = "select * from Options where QuestionId='" + questionnaireModel[i].questionId + "'";
-                        SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
-                        OptionModel optionModel = new OptionModel();
-                        if(sQLiteDataReader.HasRows)
-                        {
-                            while(sQLiteDataReader.Read())
-                            {
-                                optionModel.optionA = sQLiteDataReader.GetString(1);
-                                optionModel.optionB = sQLiteDataReader.GetString(2);
-                                optionModel.optionC = sQLiteDataReader.GetString(3);
-                                optionModel.optionD = sQLiteDataReader.GetString(4);
-                                optionModel.questionId = sQLiteDataReader.GetInt32(5);
-                            }
-                        }
-                        sQLiteDataReader.Close();
-                        questionnaireModel[i].optionList = optionModel;
-                        i++;                        
-                    }
-                }
-                dr.Close();
-                con.Close();
-                return CreatedAtAction(nameof(Get), questionnaireModel);
+                return CreatedAtAction(nameof(Get), await GetQuestionnaires(id,levelName));
             }
+        }
+
+        public async Task<List<CourseModel>> GetCourseDetails()
+        {
+            cmd.CommandText = "select * from Course";
+            SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
+            int i = 0;
+            List<CourseModel> courseModel = new List<CourseModel>();
+
+            if (sQLiteDataReader.HasRows)
+            {
+                while (sQLiteDataReader.Read())
+                {
+                    courseModel.Add(new CourseModel());
+                    courseModel[i].CourseId = int.Parse(sQLiteDataReader["Id"].ToString());
+                    courseModel[i].CourseName = sQLiteDataReader["CourseName"].ToString();
+                    courseModel[i].AuthorName = sQLiteDataReader["AuthorName"].ToString();
+                    courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
+                    i++;
+                }
+            }
+            sQLiteDataReader.Close();
+            con.Close();
+            return courseModel;
+        }
+
+        public async Task<List<QuestionnaireModel>> GetQuestionnaires(string id,string levelName)
+        {
+            cmd.CommandText = "select q.Id,t.Id,l.LevelName,q.QuestionText,q.OptionList,q.TypeOfQuestion from Test t inner join Course c on c.Id=t.CourseId inner join Questionnaire q on t.Id=q.TestId inner join Level l on l.Id=t.LevelId where c.Id='" + id + "' and l.LevelName='" + levelName + "'";
+            SQLiteDataReader dr = cmd.ExecuteReader();
+            int i = 0;
+            List<QuestionnaireModel> questionnaireModel = new List<QuestionnaireModel>();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    questionnaireModel.Add(new QuestionnaireModel());
+                    questionnaireModel[i].questionId = dr.GetInt32(0);
+                    questionnaireModel[i].testId = dr.GetInt32(1);
+                    questionnaireModel[i].question = dr.GetString(3);
+                    questionnaireModel[i].typeOfQuestion = dr.GetString(5);
+                    cmdd.CommandText = "select * from Options where QuestionId='" + questionnaireModel[i].questionId + "'";
+                    SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
+                    OptionModel optionModel = new OptionModel();
+                    if (sQLiteDataReader.HasRows)
+                    {
+                        while (sQLiteDataReader.Read())
+                        {
+                            optionModel.optionA = sQLiteDataReader.GetString(1);
+                            optionModel.optionB = sQLiteDataReader.GetString(2);
+                            optionModel.optionC = sQLiteDataReader.GetString(3);
+                            optionModel.optionD = sQLiteDataReader.GetString(4);
+                            optionModel.questionId = sQLiteDataReader.GetInt32(5);
+                        }
+                    }
+                    sQLiteDataReader.Close();
+                    questionnaireModel[i].optionList = optionModel;
+                    i++;
+                }
+            }
+            dr.Close();
+            con.Close();
+            return questionnaireModel;
         }
         public static int score = 0;
         [HttpPost]
