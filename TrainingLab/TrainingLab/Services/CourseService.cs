@@ -1,0 +1,189 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Linq;
+using System.Threading.Tasks;
+using TrainingLab.Models;
+
+namespace TrainingLab.Services
+{
+    public class CourseService
+    {
+        private static Lazy<CourseService> Initializer = new Lazy<CourseService>(() => new CourseService());
+        public static CourseService Instance => Initializer.Value;
+        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs";
+        SQLiteConnection con = new SQLiteConnection("Data Source=" + path + "\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
+        SQLiteCommand cmd = new SQLiteCommand();
+        SQLiteCommand cmdd = new SQLiteCommand();
+        SQLiteDataReader dr;
+
+        public async Task<IEnumerable> GetCourses(string id)
+        {
+            cmd.Connection = con;
+            cmdd.Connection = con;
+            if (id == null)
+            {
+               List<CourseModel> courseModel= GetCourseDetails();
+                return courseModel;
+            }
+            else
+            {
+                List<ChapterModel> chapterModel = GetCourseTopics(id);
+                return chapterModel;
+            }
+        }
+        public List<ChapterModel> GetCourseTopics(string id)
+        {
+            List<ChapterModel> chapterModel = new List<ChapterModel>();
+            cmd.CommandText = "select * from Chapter where CourseId='" + id + "'";
+            con.Open();
+            SQLiteDataReader dr = cmd.ExecuteReader();
+            int i = 0;
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    chapterModel.Add(new ChapterModel());
+                    chapterModel[i].chapterId = dr.GetInt32(0);
+                    chapterModel[i].chapterName = dr.GetString(1);
+                    cmdd.CommandText = "select * from Topic t inner join Chapter ch on ch.Id=t.ChapterId inner join Course c on c.Id=ch.CourseId where t.ChapterId='" + chapterModel[i].chapterId + "'";
+                    SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
+                    int j = 0;
+                    List<TopicModel> topicModel = new List<TopicModel>();
+                    if (sQLiteDataReader.HasRows)
+                    {
+                        while (sQLiteDataReader.Read())
+                        {
+                            topicModel.Add(new TopicModel());
+                            topicModel[j].topicId = int.Parse(sQLiteDataReader["Id"].ToString());
+                            topicModel[j].topicName = sQLiteDataReader["TopicName"].ToString();
+                            topicModel[j].videoURL = "http://localhost:5500/videos/courses"+sQLiteDataReader["VideoURL"].ToString();
+                            topicModel[j].notesURL = "http://localhost:5500/notes" + sQLiteDataReader["NotesURL"].ToString();
+                            topicModel[j].chapterId = int.Parse(sQLiteDataReader["ChapterId"].ToString());
+                            j++;
+                        }
+                    }
+                    chapterModel[i].topics = topicModel;
+                    sQLiteDataReader.Close();
+                    i++;
+                }               
+            }
+            dr.Close();
+            con.Close();
+            return  chapterModel;
+        }
+
+        public List<CourseModel> GetCourseDetails()
+        {
+            cmd.CommandText = "select * from Course";
+            con.Open();
+            SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
+            int i = 0;
+            List<CourseModel> courseModel = new List<CourseModel>();
+
+            if (sQLiteDataReader.HasRows)
+            {
+                while (sQLiteDataReader.Read())
+                {
+                    courseModel.Add(new CourseModel());
+                    courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
+                    courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
+                    courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
+                    courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
+                    i++;
+                }
+            }
+            sQLiteDataReader.Close();
+            con.Close();
+            return courseModel;
+        }
+
+
+        public bool AddChapter(ChapterModel chapterModel)
+        {
+            try
+            {
+                cmd.Connection = con;
+                con.Open();
+                cmd.CommandText = "INSERT INTO Chapter(Id,Chaptername,CourseId) VALUES (@chapterId,@chaptername,@courseId)";
+                cmd.Parameters.AddWithValue("@chapterId", chapterModel.chapterId);
+                cmd.Parameters.AddWithValue("@chaptername", chapterModel.chapterName);
+                cmd.Parameters.AddWithValue("@courseId", chapterModel.courseId);
+                int rowsAffected = cmd.ExecuteNonQuery();
+                con.Close();
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+
+        }
+
+        public bool EditChapter(ChapterModel chapterModel, [FromQuery] int id)
+        {
+            try
+            {
+                cmd.Connection = con;
+                con.Open();
+                cmd.CommandText = "UPDATE Chapter SET Id=@chapterId,Chaptername=@chapterName,CourseId=@courseId where Id='" + id + "'";
+                cmd.Parameters.AddWithValue("@chapterId", chapterModel.chapterId);
+                cmd.Parameters.AddWithValue("@chaptername", chapterModel.chapterName);
+                cmd.Parameters.AddWithValue("@courseId", chapterModel.courseId);
+                int rowsAffected = cmd.ExecuteNonQuery();
+                con.Close();
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+
+        }
+
+        public bool AddTopics(TopicModel topicModel)
+        {
+            try
+            {
+                cmd.Connection = con;
+                con.Open();
+                cmd.CommandText = "INSERT INTO Topic(TopicName,VideoURL,NotesURL,ChapterId) VALUES (@topicName,@videoURL,@notesURL,@chapterId)";
+                cmd.Parameters.AddWithValue("@topicName", topicModel.topicName);
+                cmd.Parameters.AddWithValue("@videoURL", topicModel.videoURL);
+                cmd.Parameters.AddWithValue("@notesURL", topicModel.notesURL);
+                cmd.Parameters.AddWithValue("@chapterId", topicModel.chapterId);
+                int rowsAffected = cmd.ExecuteNonQuery();
+                con.Close();
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool EditTopics(TopicModel topicModel, [FromQuery] int id)
+        {
+            try
+            {
+                cmd.Connection = con;
+                con.Open();
+                cmd.CommandText = "UPDATE Topic SET TopicName=@topicName,VideoURL=@videoURL,NotesURL=@notesURL,ChapterId=@chapterId where Id='" + id + "'";
+                cmd.Parameters.AddWithValue("@topicName", topicModel.topicName);
+                cmd.Parameters.AddWithValue("@videoURL", topicModel.videoURL);
+                cmd.Parameters.AddWithValue("@notesURL", topicModel.notesURL);
+                cmd.Parameters.AddWithValue("@chapterId", topicModel.chapterId);
+                int rowsAffected = cmd.ExecuteNonQuery();
+                con.Close();
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+        }
+    }
+}
+

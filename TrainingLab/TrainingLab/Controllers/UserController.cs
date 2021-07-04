@@ -6,120 +6,41 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using Microsoft.AspNetCore.Authorization;
 using TrainingLab.Models;
-
+using System.Text;
+using TrainingLab.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace TrainingLab.Controllers
 {
-  //  [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : Controller
     {
-        SQLiteConnection con = new SQLiteConnection("Data Source=C:\\Users\\richa\\source\\repos\\Intellectual-bugs\\TrainingLab\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
-        // private readonly IJWTAuthenticationManager jWTAuthenticationManager;
-        private readonly ILogger<UserController> _logger;
-
-        /* public UserController(ILogger<UserController> logger, IJWTAuthenticationManager jWTAuthenticationManager)
-         {
-             _logger = logger;
-             this.jWTAuthenticationManager = jWTAuthenticationManager;
-         }*/
-        public UserController(ILogger<UserController> logger)
-        {
-            _logger = logger;
-        }
-
-
-
-        [HttpGet]
-        [Route("auth")]
-        public IEnumerable<string> GetData([FromQuery] string emailId, [FromQuery] string password)
-        {
-            SQLiteCommand cmd = new SQLiteCommand(con);
-            con.Open();
-            string newpass = Crypto.Encryptor.Encrypt(password);
-            cmd.CommandText = "SELECT * FROM User where EmailId='" + emailId + "' and Password ='" + newpass + "'";
-            SQLiteDataReader dr = cmd.ExecuteReader();
-            List<string> studentData = new List<string>();
-            int a = dr.FieldCount;
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    studentData.Add("Name: " + dr["Name"].ToString());
-                    studentData.Add("emailId: " + dr["EmailId"].ToString());
-                    studentData.Add("password: " + Crypto.Encryptor.Decrypt(dr["Password"].ToString()));
-
-                }
-            }
-            dr.Close();
-            con.Close();
-            return studentData;
-        }
-
-
-
-        // for signup
-        [AllowAnonymous]
+       
+      
+        //signup
         [HttpPost]
         [Route("signup")]
-        public IActionResult Create([FromBody] UserModel user)
-        {
-            SQLiteCommand cmd = new SQLiteCommand(con);
-            con.Open();
-            cmd.CommandText = "INSERT INTO User(Name,EmailId,Password) VALUES('" + user.name + "','" + user.emailId + "','" + Crypto.Encryptor.Encrypt(user.password) + "')";
-            int result = cmd.ExecuteNonQuery();
-            user.password = Crypto.Encryptor.Encrypt(user.password);
-            con.Close();
-            return CreatedAtAction(nameof(Create), user);
-
+        public IActionResult SignUp([FromBody] UserModel userModel)
+        {            
+            if(UserService.Instance.SignUp(userModel))
+            {
+                return Ok(new { result = "True" });
+            }
+            return Ok(new { result = "False", message = "User with such email already exists!" });         
         }
 
-
+        //signin
         [HttpPost]
         [Route("login")]
-        public IActionResult Signin([FromBody] UserModel userModel)
+        public IActionResult SignIn([FromBody] UserModel userModel)
         {
-            SQLiteCommand cmd = new SQLiteCommand(con);
-            con.Open();
-            string newpass = Crypto.Encryptor.Encrypt(userModel.password);
-            cmd.CommandText = "SELECT * FROM User WHERE EmailId ='" + userModel.emailId + "' AND Password='" + newpass + "'";
-            SQLiteDataReader dr = cmd.ExecuteReader();
-            UserModel user = new UserModel();
-            int a = dr.FieldCount;
-            if (dr.HasRows)
+            string result = UserService.Instance.SignIn(userModel);
+            if(result==null)
             {
-                while (dr.Read())
-                {
-                    user.emailId = dr.GetString(0);
-                    user.name = dr.GetString(1);
-                    user.password = dr.GetString(2);
-                }
+                return Ok(new { result = "False", message = "Invalid Email or Password!" });
             }
-            dr.Close();
-            con.Close();
-            return CreatedAtAction(nameof(Create), user);
-            return CreatedAtAction(nameof(Signin), user);
+            return Ok(new { result = "True",name=result});            
         }
-
-       /* [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] UserModel user)
-        {
-            var token = jWTAuthenticationManager.Authenticate(user.emailId, user.password);
-
-            if (token == null)
-                return Unauthorized();
-
-            return Ok(token);
-        }
-*/
-        /*public class UserCred
-          {
-              public string email { get; set; }
-              public string password { get; set; }
-          }*/
-
-
     }
 }

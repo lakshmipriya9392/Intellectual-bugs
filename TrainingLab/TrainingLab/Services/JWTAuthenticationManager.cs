@@ -1,4 +1,4 @@
-﻿/*using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -40,7 +40,7 @@ namespace TrainingLab
 
             }
 
-           
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(tokenKey);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -58,4 +58,4 @@ namespace TrainingLab
             return tokenHandler.WriteToken(token);
         }
     }
-}*/
+}
