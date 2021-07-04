@@ -13,8 +13,7 @@ namespace TrainingLab.Services
     {
         private static Lazy<EventService> Initializer = new Lazy<EventService>(() => new EventService());
         public static EventService Instance => Initializer.Value;
-        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs";
-        SQLiteConnection con = new SQLiteConnection("Data Source=" + path + "\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
+        SQLiteConnection con = new SQLiteConnection("Data Source=" + DBConnection.path);
         SQLiteCommand cmd = new SQLiteCommand();
         SQLiteCommand cmdd = new SQLiteCommand();
         SQLiteDataReader dr;

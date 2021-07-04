@@ -15,9 +15,8 @@ namespace TrainingLab.Services
     {
 
         private static Lazy<UserService> Initializer = new Lazy<UserService>(() => new UserService());
-        public static UserService Instance => Initializer.Value;       
-        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs";
-        SQLiteConnection con = new SQLiteConnection("Data Source=" + path + "\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
+        public static UserService Instance => Initializer.Value;
+        SQLiteConnection con = new SQLiteConnection("Data Source=" + DBConnection.path);
         public bool SignUp(UserModel user)
         {
             SQLiteCommand cmd = new SQLiteCommand();
