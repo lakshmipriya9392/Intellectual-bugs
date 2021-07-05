@@ -23,11 +23,12 @@ namespace TrainingLab.Services
             con.Open();
             if (id ==null)
             {
-                cmd.CommandText = "select * from Event where Id='" + id + "' ORDER BY StartTime DESC";
+                cmd.CommandText = "select * from Event where Id EXCEPT select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY StartTime DESC";
+                
             }
             else
             {
-                cmd.CommandText = "select * from Event where Id EXCEPT select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY StartTime DESC";
+                cmd.CommandText = "select * from Event where Id='" + id + "' ORDER BY StartTime DESC";
             }
             dr = cmd.ExecuteReader();
             List<EventModel> eventModel = new List<EventModel>();
