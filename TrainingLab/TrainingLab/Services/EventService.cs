@@ -17,12 +17,11 @@ namespace TrainingLab.Services
         SQLiteCommand cmd = new SQLiteCommand();
         SQLiteCommand cmdd = new SQLiteCommand();
         SQLiteDataReader dr;
-        public async Task<IEnumerable<EventModel>> GetEvents([FromQuery] int id)
+        public async Task<IEnumerable<EventModel>> GetEvents(string id)
         {
-            cmd.Connection = con;
-            cmdd.Connection = con;
+            cmd.Connection = con;            
             con.Open();
-            if (id > 0)
+            if (id ==null)
             {
                 cmd.CommandText = "select * from Event where Id='" + id + "' ORDER BY StartTime DESC";
             }
@@ -39,7 +38,7 @@ namespace TrainingLab.Services
                 {
 
                     eventModel.Add(new EventModel());
-                    GetEventAttendee(i, eventModel, dr["EventName"].ToString());
+                    GetEventAttendee(i, eventModel, dr.GetInt32(0));
                     eventModel[i].EventId = dr.GetInt32(0);
                     eventModel[i].EventName = dr.GetString(1);
                     eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
@@ -50,7 +49,7 @@ namespace TrainingLab.Services
                 }
             }
             dr.Close();
-            con.Close();
+            con.Close();         
             return eventModel;
         }
 
@@ -66,9 +65,8 @@ namespace TrainingLab.Services
             {
                 while (dr.Read())
                 {
-                    eventModel.Add(new EventModel());
-                    Console.WriteLine(eventModel.Count);
-                    GetEventAttendee(i, eventModel, dr["EventName"].ToString());
+                    eventModel.Add(new EventModel());                   
+                    GetEventAttendee(i, eventModel, dr.GetInt32(0));
                     eventModel[i].EventId = dr.GetInt32(0);
                     eventModel[i].EventName = dr.GetString(1);
                     eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
@@ -79,13 +77,14 @@ namespace TrainingLab.Services
                 }
             }
             dr.Close();
-            con.Close();
+            con.Close();       
             return eventModel;
         }
 
-        public List<EventModel> GetEventAttendee(int i, List<EventModel> eventModel, string eventName)
+        public void GetEventAttendee(int i, List<EventModel> eventModel, int eventId)
         {
-            cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.EventName='" + eventName + "'";
+            cmdd.Connection = con;
+            cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.Id='" + eventId + "'";
             SQLiteDataReader dr2 = cmdd.ExecuteReader();
             StringBuilder panelist = new StringBuilder();
             StringBuilder attendee = new StringBuilder();
@@ -117,8 +116,7 @@ namespace TrainingLab.Services
             }
             eventModel[i].Panelists = panelist.ToString();
             eventModel[i].Attendee = attendee.ToString();
-            dr2.Close();
-            return eventModel;
+            dr2.Close();            
         }
 
         public bool AddEvent(EventModel eventModel)
@@ -144,6 +142,7 @@ namespace TrainingLab.Services
                     rowsAffected = cmd.ExecuteNonQuery();
                 }
                 con.Close();
+                
                 return true;
             }
             catch (Exception e)
@@ -166,6 +165,7 @@ namespace TrainingLab.Services
                 cmd.Parameters.AddWithValue("@eventURL", eventModel.EventURL);
                 int rowsAffected = cmd.ExecuteNonQuery();
                 con.Close();
+                
                 return true;
             }
             catch (Exception e)
@@ -183,6 +183,7 @@ namespace TrainingLab.Services
                 cmd.CommandText = "DELETE * FROM Event where Id='" + id + "'";
                 int rowsAffected = cmd.ExecuteNonQuery();
                 con.Close();
+                
                 return true;
             }
             catch (Exception e)
@@ -197,6 +198,8 @@ namespace TrainingLab.Services
             con.Open();
             cmd.CommandText = "INSERT INTO EventAttendee(EmailId,EventId,Panelist) VALUES('" + eventModel.Attendee + "','" + eventModel.EventId + "','False')";
             int rowsAffected = cmd.ExecuteNonQuery();
+            
+            con.Close();
             if (rowsAffected > 0)
             {
                 return true;
