@@ -57,8 +57,8 @@ namespace TrainingLab.Controllers
             return Ok(new { result = "Couldn't delete data" });
         }
 
-        [HttpPost]
-        public IActionResult AddAttendee(EventModel eventModel)
+        [HttpPost("addattendee")]
+        public IActionResult AddAttendee([FromBody] EventModel eventModel)
         {
             if (EventService.Instance.AddAttendee(eventModel))
             {

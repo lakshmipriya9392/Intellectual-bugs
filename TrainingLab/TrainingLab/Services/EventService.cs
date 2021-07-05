@@ -19,105 +19,126 @@ namespace TrainingLab.Services
         SQLiteDataReader dr;
         public async Task<IEnumerable<EventModel>> GetEvents(string id)
         {
-            cmd.Connection = con;            
-            con.Open();
-            if (id ==null)
-            {
-                cmd.CommandText = "select * from Event where Id EXCEPT select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY StartTime DESC";
-                
-            }
-            else
-            {
-                cmd.CommandText = "select * from Event where Id='" + id + "' ORDER BY StartTime DESC";
-            }
-            dr = cmd.ExecuteReader();
             List<EventModel> eventModel = new List<EventModel>();
-            int i = 0;
-            if (dr.HasRows)
+            try
             {
-                while (dr.Read())
+                cmd.Connection = con;
+                con.Open();
+                if (id == null)
                 {
-
-                    eventModel.Add(new EventModel());
-                    GetEventAttendee(i, eventModel, dr.GetInt32(0));
-                    eventModel[i].EventId = dr.GetInt32(0);
-                    eventModel[i].EventName = dr.GetString(1);
-                    eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
-                    eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
-                    eventModel[i].Description = dr.GetString(4);
-                    eventModel[i].EventURL = dr.GetString(5);
-                    i++;
+                    cmd.CommandText = "select * from Event where Id EXCEPT select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY StartTime DESC";
                 }
+                else
+                {
+                    cmd.CommandText = "select * from Event where Id='" + id + "' ORDER BY StartTime DESC";
+                }
+                dr = cmd.ExecuteReader();
+               
+                int i = 0;
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        eventModel.Add(new EventModel());
+                        GetEventAttendee(i, eventModel, dr.GetInt32(0));
+                        eventModel[i].EventId = dr.GetInt32(0);
+                        eventModel[i].EventName = dr.GetString(1);
+                        eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
+                        eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
+                        eventModel[i].Description = dr.GetString(4);
+                        eventModel[i].EventURL = dr.GetString(5);
+                        i++;
+                    }
+                }
+                dr.Close();
+                con.Close();
+                return eventModel;
             }
-            dr.Close();
-            con.Close();         
-            return eventModel;
+            catch(Exception e)
+            {
+                return eventModel;
+            }
         }
 
         public async Task<IEnumerable<EventModel>> GetFutureEvents()
         {
-            cmd.Connection = con;
-            con.Open();
-            cmd.CommandText = "select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "'";
-            dr = cmd.ExecuteReader();
             List<EventModel> eventModel = new List<EventModel>();
-            int i = 0;
-            if (dr.HasRows)
+            try
             {
-                while (dr.Read())
+                cmd.Connection = con;
+                con.Open();
+                cmd.CommandText = "select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "'";
+                dr = cmd.ExecuteReader();
+                int i = 0;
+                if (dr.HasRows)
                 {
-                    eventModel.Add(new EventModel());                   
-                    GetEventAttendee(i, eventModel, dr.GetInt32(0));
-                    eventModel[i].EventId = dr.GetInt32(0);
-                    eventModel[i].EventName = dr.GetString(1);
-                    eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
-                    eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
-                    eventModel[i].Description = dr.GetString(4);
-                    eventModel[i].EventURL = dr.GetString(5);
-                    i++;
+                    while (dr.Read())
+                    {
+                        eventModel.Add(new EventModel());
+                        GetEventAttendee(i, eventModel, dr.GetInt32(0));
+                        eventModel[i].EventId = dr.GetInt32(0);
+                        eventModel[i].EventName = dr.GetString(1);
+                        eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
+                        eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
+                        eventModel[i].Description = dr.GetString(4);
+                        eventModel[i].EventURL = dr.GetString(5);
+                        i++;
+                    }
                 }
+                dr.Close();
+                con.Close();
+                return eventModel;
             }
-            dr.Close();
-            con.Close();       
-            return eventModel;
+            catch(Exception e)
+            {
+                return eventModel;
+            }
         }
 
         public void GetEventAttendee(int i, List<EventModel> eventModel, int eventId)
         {
-            cmdd.Connection = con;
-            cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.Id='" + eventId + "'";
-            SQLiteDataReader dr2 = cmdd.ExecuteReader();
-            StringBuilder panelist = new StringBuilder();
-            StringBuilder attendee = new StringBuilder();
-            eventModel[i].Panelists = "";
-            eventModel[i].Attendee = "";
-            if (dr2.HasRows)
+            try
             {
-                int j = 0;
-                while (dr2.Read())
+                cmdd.Connection = con;
+                cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.Id='" + eventId + "'";
+                SQLiteDataReader dr2 = cmdd.ExecuteReader();
+                StringBuilder panelist = new StringBuilder();
+                StringBuilder attendee = new StringBuilder();
+                eventModel[i].Panelists = "";
+                eventModel[i].Attendee = "";
+                if (dr2.HasRows)
                 {
-                    if (dr2["Panelist"].ToString() == "True")
+                    int j = 0;
+                    while (dr2.Read())
                     {
-                        if (j != 0 && panelist.ToString() != "")
+                        if (dr2["Panelist"].ToString() == "True")
                         {
-                            panelist.Append(",");
+                            if (j != 0 && panelist.ToString() != "")
+                            {
+                                panelist.Append(",");
+                            }
+                            panelist.Append(dr2["Name"]);
                         }
-                        panelist.Append(dr2["Name"]);
-                    }
-                    else
-                    {
-                        if (j != 0 && attendee.ToString() != "")
+                        else
                         {
-                            attendee.Append(",");
+                            if (j != 0 && attendee.ToString() != "")
+                            {
+                                attendee.Append(",");
+                            }
+                            attendee.Append(dr2["Name"]);
                         }
-                        attendee.Append(dr2["Name"]);
+                        j++;
                     }
-                    j++;
                 }
+                eventModel[i].Panelists = panelist.ToString();
+                eventModel[i].Attendee = attendee.ToString();
+                dr2.Close();
             }
-            eventModel[i].Panelists = panelist.ToString();
-            eventModel[i].Attendee = attendee.ToString();
-            dr2.Close();            
+            catch(Exception e)
+            {
+                eventModel[i].Panelists = null;
+                eventModel[i].Attendee = null;
+            }
         }
 
         public bool AddEvent(EventModel eventModel)
@@ -191,9 +212,8 @@ namespace TrainingLab.Services
             {
                 return false;
             }
-        }
-
-        public bool AddAttendee(EventModel eventModel)
+        }     
+        public bool AddAttendee([FromBody] EventModel eventModel)
         {
             cmd.Connection = con;
             con.Open();
