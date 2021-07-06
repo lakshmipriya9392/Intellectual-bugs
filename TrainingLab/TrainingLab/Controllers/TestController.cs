@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using TrainingLab.Models;
+using TrainingLab.Services;
 
 namespace TrainingLab.Controllers
 {
@@ -14,186 +17,52 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class TestController : Controller
     {
-        public static string path = "C:\\Users\\HIMANI\\Desktop\\Perspectify Internship\\Training Lab\\Intellectual-bugs";
-        SQLiteConnection con = new SQLiteConnection("Data Source=" + path + "\\TrainingLab\\TrainingLab\\TrainingLabDB.db");
-        SQLiteCommand cmd = new SQLiteCommand();
-        SQLiteCommand cmdd = new SQLiteCommand();
-        static int testId = 0;
+
         [HttpGet]
-
-        public async Task<IActionResult> Get([FromQuery] string id, [FromQuery] string levelName)
+        public async Task<IEnumerable> Get([FromQuery] string id, [FromQuery] string levelName)
         {
-            cmd.Connection = con;
-            cmdd.Connection = con;
-            con.Open();            
-            if (id == null)
-            {
-                return CreatedAtAction(nameof(Get), await GetCourseDetails());               
-            }
-            else
-            {
-                return CreatedAtAction(nameof(Get), await GetQuestionnaires(id,levelName));
-            }
+            return await TestService.Instance.GetCourses(id, levelName);
         }
 
-        public async Task<List<CourseModel>> GetCourseDetails()
-        {
-            cmd.CommandText = "select * from Course";
-            SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
-            int i = 0;
-            List<CourseModel> courseModel = new List<CourseModel>();
-
-            if (sQLiteDataReader.HasRows)
-            {
-                while (sQLiteDataReader.Read())
-                {
-                    courseModel.Add(new CourseModel());
-                    courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
-                    courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
-                    courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
-                    courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
-                    i++;
-                }
-            }
-            sQLiteDataReader.Close();
-            con.Close();
-            return courseModel;
-        }
-
-        public async Task<List<QuestionnaireModel>> GetQuestionnaires(string id,string levelName)
-        {
-            cmd.CommandText = "select q.Id,t.Id,l.LevelName,q.QuestionText,q.OptionList,q.TypeOfQuestion from Test t inner join Course c on c.Id=t.CourseId inner join Questionnaire q on t.Id=q.TestId inner join Level l on l.Id=t.LevelId where c.Id='" + id + "' and l.LevelName='" + levelName + "'";
-            SQLiteDataReader dr = cmd.ExecuteReader();
-            int i = 0;
-            List<QuestionnaireModel> questionnaireModel = new List<QuestionnaireModel>();
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    questionnaireModel.Add(new QuestionnaireModel());
-                    questionnaireModel[i].questionId = dr.GetInt32(0);
-                    questionnaireModel[i].testId = dr.GetInt32(1);
-                    questionnaireModel[i].question = dr.GetString(3);
-                    questionnaireModel[i].typeOfQuestion = dr.GetString(5);
-                    cmdd.CommandText = "select * from Options where QuestionId='" + questionnaireModel[i].questionId + "'";
-                    SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
-                    OptionModel optionModel = new OptionModel();
-                    if (sQLiteDataReader.HasRows)
-                    {
-                        while (sQLiteDataReader.Read())
-                        {
-                            optionModel.optionA = sQLiteDataReader.GetString(1);
-                            optionModel.optionB = sQLiteDataReader.GetString(2);
-                            optionModel.optionC = sQLiteDataReader.GetString(3);
-                            optionModel.optionD = sQLiteDataReader.GetString(4);
-                            optionModel.questionId = sQLiteDataReader.GetInt32(5);
-                        }
-                    }
-                    sQLiteDataReader.Close();
-                    questionnaireModel[i].optionList = optionModel;
-                    i++;
-                }
-            }
-            dr.Close();
-            con.Close();
-            return questionnaireModel;
-        }
-        public static int score = 0;
         [HttpPost]
         public async Task<IActionResult> PostAnswer(int id, string answer, string emailId)
         {
-               return CreatedAtAction(nameof(PostAnswer),await CheckAnswer(id, answer, emailId));
-        }
-        public async Task<string> CheckAnswer(int id, string answer, string emailId)
-        {
-
-            cmd.Connection = con;
-            con.Open();
-            cmd.CommandText = "select CorrectAnswer from Questionnaire where Id='" + id + "'";
-            string correctAnswer = cmd.ExecuteScalar().ToString();
-            if (correctAnswer.Equals(answer))
+            if (await TestService.Instance.CheckAnswer(id, answer, emailId))
             {
-                score++;
-                return "{\"message\":\"CORRECT ANSWER\"}";
+                return Ok(new { message = "CORRECT ANSWER!" });
             }
-            else
-            {
-                return "{\"message\":\"WRONG ANSWER\"}";
-            }
-
+            return Ok(new { message = "WRONG ANSWER!" });
         }
+
         [HttpPost("score")]
         public async Task<IActionResult> PostScore(int id, int score, string emailId)
         {
-            cmd.Connection = con;
-            con.Open();           
-            cmd.CommandText = "INSERT INTO UserTestLevel(EmailId,TestId,Status) VALUES('" + emailId + "','" + id + "','UPGRADING')";
-            int rowsAffetcted = cmd.ExecuteNonQuery();
-            await UpgradeLevel(id,score,emailId);
-            if (rowsAffetcted > 0)
+            if (await TestService.Instance.PostScore(id, score, emailId))
             {
-                return Ok();
+                return Ok(new { result = "success" });
             }
-            return CreatedAtAction(nameof(PostScore), "Not Inserted");
+            return Ok(new { result = "something gone wrong!" });
         }
-        public async Task<IActionResult> UpgradeLevel(int id,int score,string emailId)
-        {
-            cmd.Connection = con;
-            cmd.CommandText = "SELECT MinimumScore from Test where Id='" + id + "'";
-            float minimumScore = float.Parse(cmd.ExecuteScalar().ToString());
-            cmd.CommandText = "INSERT INTO UserScore(Score,EmailId,TestId) VALUES('" + score + "','" + emailId + "','" + id + "')";
-            int rowsAffetcted = cmd.ExecuteNonQuery();
-            if(score>=minimumScore)
-            {
-                cmd.CommandText = "UPDATE UserTestLevel SET Status='PASSED' where EmailId='"+emailId+"' and TestId='"+id+"'";
-                rowsAffetcted = cmd.ExecuteNonQuery();
-            }
-            return Ok();
-        }
+
 
         [HttpPost("postQuestion")]
         public async Task<IActionResult> PostQuestion(QuestionnaireModel[] questionnaireModels)
         {
-            cmd.Connection = con;
-            con.Open();
-            int i = 0,rowsAffected=0;
-            while (i < questionnaireModels.Length)
+            if (await TestService.Instance.PostQuestion(questionnaireModels))
             {
-                cmd.CommandText = "INSERT INTO Questionnaire(QuestionText,TypeOfQuestion,CorrectAnswer,TestId) VALUES('"+questionnaireModels[i].question+"','"+questionnaireModels[i].typeOfQuestion+"','"+questionnaireModels[i].answer+"','"+questionnaireModels[i].testId+"')";
-                rowsAffected = cmd.ExecuteNonQuery();
-                if(rowsAffected<0)
-                {
-                    break;
-                }
-                i++;
+                return Ok(new { result = "success" });
             }
-            if(rowsAffected>0)
-            {
-                return Ok();
-            }
-            return CreatedAtAction(nameof(PostQuestion), "Not inserted");
+            return Ok(new { result = "something gone wrong!" });
         }
+
         [HttpPost("postOption")]
         public async Task<IActionResult> PostOptions(OptionModel[] optionModels)
         {
-            cmd.Connection = con;
-            con.Open();
-            int i = 0, rowsAffected = 0;
-            while (i < optionModels.Length)
+            if (await TestService.Instance.PostOptions(optionModels))
             {
-                cmd.CommandText = "INSERT INTO Options(OptionA,OptionB,OptionC,OptionD,QuestionId) VALUES('" + optionModels[i].optionA + "','" + optionModels[i].optionB + "','" + optionModels[i].optionC + "','" + optionModels[i].optionD + "','"+optionModels[i].questionId+"')";
-                rowsAffected = cmd.ExecuteNonQuery();
-                if (rowsAffected < 0)
-                {
-                    break;
-                }
-                i++;
+                return Ok(new { result = "success" });
             }
-            if (rowsAffected > 0)
-            {
-                return Ok();
-            }
-            return CreatedAtAction(nameof(PostQuestion), "Not inserted");
+            return Ok(new { result = "something gone wrong!" });
         }
     }
 }

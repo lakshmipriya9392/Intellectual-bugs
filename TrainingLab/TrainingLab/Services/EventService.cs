@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -13,8 +14,8 @@ namespace TrainingLab.Services
     {
         private static Lazy<EventService> Initializer = new Lazy<EventService>(() => new EventService());
         public static EventService Instance => Initializer.Value;
-        SQLiteConnection con = new SQLiteConnection("Data Source=" + DBConnection.path);
-        
+        SQLiteConnection con = new SQLiteConnection("Data Source=" + Startup.connectionString);
+
         SQLiteDataReader dr;
         public async Task<IEnumerable<EventModel>> GetEvents(string id)
         {

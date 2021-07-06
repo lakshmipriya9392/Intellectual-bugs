@@ -11,17 +11,18 @@ namespace TrainingLab
 {
     public class Startup
     {
+        public static string connectionString;
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
         }
-
         public IConfiguration _configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            connectionString = _configuration.GetValue<string>("connectionString");
         }
         //public void ConfigureServices(IServiceCollection services)
         //{

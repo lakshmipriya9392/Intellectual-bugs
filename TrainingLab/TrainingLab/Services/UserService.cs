@@ -16,47 +16,62 @@ namespace TrainingLab.Services
 
         private static Lazy<UserService> Initializer = new Lazy<UserService>(() => new UserService());
         public static UserService Instance => Initializer.Value;
-        SQLiteConnection con = new SQLiteConnection("Data Source=" + DBConnection.path);
+        SQLiteConnection con = new SQLiteConnection("Data Source=" + Startup.connectionString);
         public bool SignUp(UserModel user)
         {
+           
             SQLiteCommand cmd = new SQLiteCommand();
-            cmd.Connection = con;
-            con.Open();
-            cmd.CommandText = "select count(*) from User where EmailId='" + user.emailId + "'";
-            int userCount = int.Parse(cmd.ExecuteScalar().ToString());
-            if (userCount > 0)
+            try
             {
-                con.Close();
-                return false;             
+                cmd.Connection = con;
+                con.Open();
+                cmd.CommandText = "select count(*) from User where EmailId='" + user.emailId + "'";
+                int userCount = int.Parse(cmd.ExecuteScalar().ToString());
+                if (userCount > 0)
+                {
+                    con.Close();
+                    return false;
+                }
+                else
+                {
+                    cmd.CommandText = "INSERT INTO User(Name,EmailId,Password) VALUES('" + user.name + "','" + user.emailId + "','" + Crypto.Encryptor.Encrypt(user.password) + "')";
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    con.Close();
+                    return true;
+                }
             }
-            else
+            catch(Exception e)
             {
-                cmd.CommandText = "INSERT INTO User(Name,EmailId,Password) VALUES('" + user.name + "','" + user.emailId + "','" + Crypto.Encryptor.Encrypt(user.password) + "')";
-                int rowsAffected = cmd.ExecuteNonQuery();
-                con.Close();
-                return true;
+                return false;
             }
         }
         public string SignIn(UserModel userModel)
         {
             SQLiteCommand cmd = new SQLiteCommand();
-            cmd.Connection = con;
-           con.Open();
-            string newPassword = Crypto.Encryptor.Encrypt(userModel.password);
-            UserModel user = new UserModel();            
-                cmd.CommandText = "SELECT * FROM User WHERE EmailId ='" + userModel.emailId + "' AND Password='"+newPassword+"'";
+            try
+            {
+                cmd.Connection = con;
+                con.Open();
+                string newPassword = Crypto.Encryptor.Encrypt(userModel.password);
+                UserModel user = new UserModel();
+                cmd.CommandText = "SELECT * FROM User WHERE EmailId ='" + userModel.emailId + "' AND Password='" + newPassword + "'";
                 SQLiteDataReader dr = cmd.ExecuteReader();
                 string userName = null;
                 if (dr.HasRows)
                 {
                     while (dr.Read())
                     {
-                        userName= dr.GetString(1);                       
+                        userName = dr.GetString(1);
                     }
                 }
-            dr.Close();
-            con.Close();
-            return userName;                                
+                dr.Close();
+                con.Close();
+                return userName;
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
         }
     }
 }

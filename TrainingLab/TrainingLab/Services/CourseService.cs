@@ -13,15 +13,12 @@ namespace TrainingLab.Services
     {
         private static Lazy<CourseService> Initializer = new Lazy<CourseService>(() => new CourseService());
         public static CourseService Instance => Initializer.Value;
-        SQLiteConnection con = new SQLiteConnection("Data Source=" + DBConnection.path);
-        SQLiteCommand cmd = new SQLiteCommand();
-        SQLiteCommand cmdd = new SQLiteCommand();
+        SQLiteConnection con = new SQLiteConnection("Data Source=" + Startup.connectionString);
+        
         SQLiteDataReader dr;
 
         public async Task<IEnumerable> GetCourses(string id)
-        {
-            cmd.Connection = con;
-            cmdd.Connection = con;
+        {            
             if (id == null)
             {
                List<CourseModel> courseModel= GetCourseDetails();
@@ -36,74 +33,99 @@ namespace TrainingLab.Services
         public List<ChapterModel> GetCourseTopics(string id)
         {
             List<ChapterModel> chapterModel = new List<ChapterModel>();
-            cmd.CommandText = "select * from Chapter where CourseId='" + id + "'";
-            con.Open();
-            SQLiteDataReader dr = cmd.ExecuteReader();
-            int i = 0;
-            if (dr.HasRows)
+            try
             {
-                while (dr.Read())
+                SQLiteCommand cmd = new SQLiteCommand();
+                SQLiteCommand cmdd = new SQLiteCommand();
+                cmd.Connection = con;
+                cmdd.Connection = con;
+
+                cmd.CommandText = "select * from Chapter where CourseId='" + id + "'";
+                con.Open();
+                SQLiteDataReader dr = cmd.ExecuteReader();
+                int i = 0;
+                if (dr.HasRows)
                 {
-                    chapterModel.Add(new ChapterModel());
-                    chapterModel[i].chapterId = dr.GetInt32(0);
-                    chapterModel[i].chapterName = dr.GetString(1);
-                    cmdd.CommandText = "select * from Topic t inner join Chapter ch on ch.Id=t.ChapterId inner join Course c on c.Id=ch.CourseId where t.ChapterId='" + chapterModel[i].chapterId + "'";
-                    SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
-                    int j = 0;
-                    List<TopicModel> topicModel = new List<TopicModel>();
-                    if (sQLiteDataReader.HasRows)
+                    while (dr.Read())
                     {
-                        while (sQLiteDataReader.Read())
+                        chapterModel.Add(new ChapterModel());
+                        chapterModel[i].chapterId = dr.GetInt32(0);
+                        chapterModel[i].chapterName = dr.GetString(1);
+                        cmdd.CommandText = "select * from Topic t inner join Chapter ch on ch.Id=t.ChapterId inner join Course c on c.Id=ch.CourseId where t.ChapterId='" + chapterModel[i].chapterId + "'";
+                        SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
+                        int j = 0;
+                        List<TopicModel> topicModel = new List<TopicModel>();
+                        if (sQLiteDataReader.HasRows)
                         {
-                            topicModel.Add(new TopicModel());
-                            topicModel[j].topicId = int.Parse(sQLiteDataReader["Id"].ToString());
-                            topicModel[j].topicName = sQLiteDataReader["TopicName"].ToString();
-                            topicModel[j].videoURL = "http://localhost:5500/videos/courses"+sQLiteDataReader["VideoURL"].ToString();
-                            topicModel[j].notesURL = "http://localhost:5500/notes" + sQLiteDataReader["NotesURL"].ToString();
-                            topicModel[j].chapterId = int.Parse(sQLiteDataReader["ChapterId"].ToString());
-                            j++;
+                            while (sQLiteDataReader.Read())
+                            {
+                                topicModel.Add(new TopicModel());
+                                topicModel[j].topicId = int.Parse(sQLiteDataReader["Id"].ToString());
+                                topicModel[j].topicName = sQLiteDataReader["TopicName"].ToString();
+                                topicModel[j].videoURL = "http://localhost:5500/videos/courses" + sQLiteDataReader["VideoURL"].ToString();
+                                topicModel[j].notesURL = "http://localhost:5500/notes" + sQLiteDataReader["NotesURL"].ToString();
+                                topicModel[j].chapterId = int.Parse(sQLiteDataReader["ChapterId"].ToString());
+                                j++;
+                            }
                         }
+                        chapterModel[i].topics = topicModel;
+                        sQLiteDataReader.Close();
+                        i++;
                     }
-                    chapterModel[i].topics = topicModel;
-                    sQLiteDataReader.Close();
-                    i++;
-                }               
+                }
+                dr.Close();
+                con.Close();
+                cmd.Dispose();
+                cmdd.Dispose();
+                return chapterModel;
             }
-            dr.Close();
-            con.Close();
-            return  chapterModel;
+            catch(Exception e)
+            {
+                return chapterModel;
+            }
         }
 
         public List<CourseModel> GetCourseDetails()
         {
-            cmd.CommandText = "select * from Course";
-            con.Open();
-            SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
-            int i = 0;
             List<CourseModel> courseModel = new List<CourseModel>();
-
-            if (sQLiteDataReader.HasRows)
+            try
             {
-                while (sQLiteDataReader.Read())
+                SQLiteCommand cmd = new SQLiteCommand();
+                cmd.Connection = con;
+                cmd.CommandText = "select * from Course";
+                con.Open();
+                SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
+                int i = 0;
+                if (sQLiteDataReader.HasRows)
                 {
-                    courseModel.Add(new CourseModel());
-                    courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
-                    courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
-                    courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
-                    courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
-                    i++;
+                    while (sQLiteDataReader.Read())
+                    {
+                        courseModel.Add(new CourseModel());
+                        courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
+                        courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
+                        courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
+                        courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
+                        i++;
+                    }
                 }
+                sQLiteDataReader.Close();
+                con.Close();
+                cmd.Dispose();
+                return courseModel;
             }
-            sQLiteDataReader.Close();
-            con.Close();
-            return courseModel;
+            catch(Exception e)
+            {
+                return courseModel;
+            }
         }
 
 
         public bool AddChapter(ChapterModel chapterModel)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             try
             {
+                cmd.Connection = con;
                 cmd.Connection = con;
                 con.Open();
                 cmd.CommandText = "INSERT INTO Chapter(Id,Chaptername,CourseId) VALUES (@chapterId,@chaptername,@courseId)";
@@ -112,10 +134,12 @@ namespace TrainingLab.Services
                 cmd.Parameters.AddWithValue("@courseId", chapterModel.courseId);
                 int rowsAffected = cmd.ExecuteNonQuery();
                 con.Close();
+                cmd.Dispose();
                 return true;
             }
             catch(Exception e)
             {
+                cmd.Dispose();
                 return false;
             }
 
@@ -123,8 +147,10 @@ namespace TrainingLab.Services
 
         public bool EditChapter(ChapterModel chapterModel, [FromQuery] int id)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             try
             {
+                cmd.Connection = con;
                 cmd.Connection = con;
                 con.Open();
                 cmd.CommandText = "UPDATE Chapter SET Id=@chapterId,Chaptername=@chapterName,CourseId=@courseId where Id='" + id + "'";
@@ -137,6 +163,7 @@ namespace TrainingLab.Services
             }
             catch(Exception e)
             {
+                cmd.Dispose();
                 return false;
             }
 
@@ -144,8 +171,9 @@ namespace TrainingLab.Services
 
         public bool AddTopics(TopicModel topicModel)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             try
-            {
+            {                
                 cmd.Connection = con;
                 con.Open();
                 cmd.CommandText = "INSERT INTO Topic(TopicName,VideoURL,NotesURL,ChapterId) VALUES (@topicName,@videoURL,@notesURL,@chapterId)";
@@ -154,17 +182,20 @@ namespace TrainingLab.Services
                 cmd.Parameters.AddWithValue("@notesURL", topicModel.notesURL);
                 cmd.Parameters.AddWithValue("@chapterId", topicModel.chapterId);
                 int rowsAffected = cmd.ExecuteNonQuery();
+                cmd.Dispose();
                 con.Close();
                 return true;
             }
             catch(Exception e)
             {
+                cmd.Dispose();
                 return false;
             }
         }
 
         public bool EditTopics(TopicModel topicModel, [FromQuery] int id)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             try
             {
                 cmd.Connection = con;
@@ -175,11 +206,13 @@ namespace TrainingLab.Services
                 cmd.Parameters.AddWithValue("@notesURL", topicModel.notesURL);
                 cmd.Parameters.AddWithValue("@chapterId", topicModel.chapterId);
                 int rowsAffected = cmd.ExecuteNonQuery();
+                cmd.Dispose();
                 con.Close();
                 return true;
             }
             catch(Exception e)
             {
+                cmd.Dispose();
                 return false;
             }
         }

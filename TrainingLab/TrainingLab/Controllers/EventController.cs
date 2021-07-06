@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using TrainingLab.Models;
 using TrainingLab.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace TrainingLab.Controllers
 {
@@ -14,10 +15,12 @@ namespace TrainingLab.Controllers
     public class EventController : Controller
     {
 
+
         [HttpGet]
         public async Task<IEnumerable<EventModel>>  Get([FromQuery] string id)
         
         {
+            
             return await EventService.Instance.GetEvents(id);        
         }
 
