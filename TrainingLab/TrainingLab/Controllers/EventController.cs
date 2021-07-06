@@ -16,6 +16,7 @@ namespace TrainingLab.Controllers
 
         [HttpGet]
         public async Task<IEnumerable<EventModel>>  Get([FromQuery] string id)
+        
         {
             return await EventService.Instance.GetEvents(id);        
         }

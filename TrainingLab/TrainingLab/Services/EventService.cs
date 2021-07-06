@@ -14,19 +14,19 @@ namespace TrainingLab.Services
         private static Lazy<EventService> Initializer = new Lazy<EventService>(() => new EventService());
         public static EventService Instance => Initializer.Value;
         SQLiteConnection con = new SQLiteConnection("Data Source=" + DBConnection.path);
-        SQLiteCommand cmd = new SQLiteCommand();
-        SQLiteCommand cmdd = new SQLiteCommand();
+        
         SQLiteDataReader dr;
         public async Task<IEnumerable<EventModel>> GetEvents(string id)
         {
             List<EventModel> eventModel = new List<EventModel>();
             try
             {
+                SQLiteCommand cmd = new SQLiteCommand();
                 cmd.Connection = con;
                 con.Open();
                 if (id == null)
                 {
-                    cmd.CommandText = "select * from Event where Id EXCEPT select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY StartTime DESC";
+                    cmd.CommandText = "select * from Event EXCEPT select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "' ORDER BY StartTime DESC";
                 }
                 else
                 {
@@ -35,6 +35,7 @@ namespace TrainingLab.Services
                 dr = cmd.ExecuteReader();
                
                 int i = 0;
+                
                 if (dr.HasRows)
                 {
                     while (dr.Read())
@@ -52,6 +53,7 @@ namespace TrainingLab.Services
                 }
                 dr.Close();
                 con.Close();
+                cmd.Dispose();
                 return eventModel;
             }
             catch(Exception e)
@@ -65,6 +67,7 @@ namespace TrainingLab.Services
             List<EventModel> eventModel = new List<EventModel>();
             try
             {
+                SQLiteCommand cmd = new SQLiteCommand();
                 cmd.Connection = con;
                 con.Open();
                 cmd.CommandText = "select * from Event where StartTime>='" + DateTime.UtcNow.AddHours(5.5).ToString("yyyy-MM-dd HH:mm:ss") + "'";
@@ -87,6 +90,7 @@ namespace TrainingLab.Services
                 }
                 dr.Close();
                 con.Close();
+                cmd.Dispose();
                 return eventModel;
             }
             catch(Exception e)
@@ -97,52 +101,49 @@ namespace TrainingLab.Services
 
         public void GetEventAttendee(int i, List<EventModel> eventModel, int eventId)
         {
+            SQLiteCommand cmdd = new SQLiteCommand();
+            SQLiteDataReader dr2 = null;
             try
             {
+                
                 cmdd.Connection = con;
                 cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.Id='" + eventId + "'";
-                SQLiteDataReader dr2 = cmdd.ExecuteReader();
-                StringBuilder panelist = new StringBuilder();
+                dr2 = cmdd.ExecuteReader();
+                
                 StringBuilder attendee = new StringBuilder();
-                eventModel[i].Panelists = "";
-                eventModel[i].Attendee = "";
+                eventModel[i].Panelists = new List<string>();
+                eventModel[i].Attendee = 0;
                 if (dr2.HasRows)
                 {
                     int j = 0;
                     while (dr2.Read())
                     {
                         if (dr2["Panelist"].ToString() == "True")
-                        {
-                            if (j != 0 && panelist.ToString() != "")
-                            {
-                                panelist.Append(",");
-                            }
-                            panelist.Append(dr2["Name"]);
+                        {                            
+                            eventModel[i].Panelists.Add(dr2["Name"].ToString());
                         }
                         else
                         {
-                            if (j != 0 && attendee.ToString() != "")
-                            {
-                                attendee.Append(",");
-                            }
-                            attendee.Append(dr2["Name"]);
+                            eventModel[i].Attendee+=1;
                         }
                         j++;
                     }
                 }
-                eventModel[i].Panelists = panelist.ToString();
-                eventModel[i].Attendee = attendee.ToString();
+                cmdd.Dispose();
                 dr2.Close();
             }
             catch(Exception e)
             {
+                cmdd.Dispose();
+                dr2.Close();
                 eventModel[i].Panelists = null;
-                eventModel[i].Attendee = null;
+                eventModel[i].Attendee = 0;
             }
         }
 
         public bool AddEvent(EventModel eventModel)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             cmd.Connection = con;
             try
             {
@@ -156,15 +157,15 @@ namespace TrainingLab.Services
                 int rowsAffected = cmd.ExecuteNonQuery();
                 cmd.CommandText = "select Id from Event where EventName='" + eventModel.EventName + "' AND StartTime='" + eventModel.StartTime + "'";
                 int eventId = int.Parse(cmd.ExecuteScalar().ToString());
-                string[] panelists = eventModel.Panelists.Split(",");
+                List<string> panelists = eventModel.Panelists;
                 int i = 0;
-                while (i < panelists.Length)
+                while (i < panelists.Count)
                 {
                     cmd.CommandText = "INSERT INTO EventAttendee(Panelist,EmailId,EventId) VALUES('True','" + panelists[i] + "','" + eventId + "')";
                     rowsAffected = cmd.ExecuteNonQuery();
                 }
                 con.Close();
-                
+                cmd.Dispose();
                 return true;
             }
             catch (Exception e)
@@ -175,6 +176,7 @@ namespace TrainingLab.Services
 
         public bool UpdateEvent(EventModel eventModel, [FromQuery] int id)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             cmd.Connection = con;
             try
             {
@@ -187,17 +189,20 @@ namespace TrainingLab.Services
                 cmd.Parameters.AddWithValue("@eventURL", eventModel.EventURL);
                 int rowsAffected = cmd.ExecuteNonQuery();
                 con.Close();
-                
+                cmd.Dispose();
                 return true;
             }
             catch (Exception e)
             {
+                con.Close();
+                cmd.Dispose();
                 return false;
             }
         }
 
          public bool DeleteEvent([FromQuery] int id)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             cmd.Connection = con;
             try
             {
@@ -205,26 +210,31 @@ namespace TrainingLab.Services
                 cmd.CommandText = "DELETE * FROM Event where Id='" + id + "'";
                 int rowsAffected = cmd.ExecuteNonQuery();
                 con.Close();
-                
+                cmd.Dispose();
                 return true;
             }
             catch (Exception e)
             {
+                con.Close();
+                cmd.Dispose();
                 return false;
             }
         }     
         public bool AddAttendee([FromBody] EventModel eventModel)
         {
+            SQLiteCommand cmd = new SQLiteCommand();
             cmd.Connection = con;
             con.Open();
             cmd.CommandText = "INSERT INTO EventAttendee(EmailId,EventId,Panelist) VALUES('" + eventModel.Attendee + "','" + eventModel.EventId + "','False')";
             int rowsAffected = cmd.ExecuteNonQuery();
             
             con.Close();
+            cmd.Dispose();
             if (rowsAffected > 0)
             {
                 return true;
             }
+            cmd.Dispose();
             return false;
         }
     }

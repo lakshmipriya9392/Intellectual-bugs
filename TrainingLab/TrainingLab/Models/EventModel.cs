@@ -13,7 +13,7 @@ namespace TrainingLab.Models
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string Description { get; set; }
-        public string Panelists { get; set; }
-        public string Attendee { get; set; }
+        public List<string> Panelists { get; set; }
+        public int Attendee { get; set; }
     }
 }
