@@ -104,7 +104,7 @@ namespace TrainingLab.Services
                         courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
                         courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
                         courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
-                        courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
+                        courseModel[i].imageURL = "http://localhost:5500/images/courses" + sQLiteDataReader["ImageURL"].ToString();
                         i++;
                     }
                 }

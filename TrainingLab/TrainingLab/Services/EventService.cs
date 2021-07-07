@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,10 +46,12 @@ namespace TrainingLab.Services
                         GetEventAttendee(i, eventModel, dr.GetInt32(0));
                         eventModel[i].EventId = dr.GetInt32(0);
                         eventModel[i].EventName = dr.GetString(1);
-                        eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
-                        eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
+                        DateTime date = DateTime.Parse(dr.GetString(2));
+                        eventModel[i].StartTime = date.ToString("f", CultureInfo.CreateSpecificCulture("en-US"));
+                        date = DateTime.Parse(dr.GetString(3));
+                        eventModel[i].EndTime = date.ToString("f", CultureInfo.CreateSpecificCulture("en-US"));
                         eventModel[i].Description = dr.GetString(4);
-                        eventModel[i].EventURL = dr.GetString(5);
+                        eventModel[i].EventURL = "http://localhost:5500/videos/events" + dr.GetString(5);
                         i++;
                     }
                 }
@@ -82,10 +85,13 @@ namespace TrainingLab.Services
                         GetEventAttendee(i, eventModel, dr.GetInt32(0));
                         eventModel[i].EventId = dr.GetInt32(0);
                         eventModel[i].EventName = dr.GetString(1);
-                        eventModel[i].StartTime = DateTime.Parse(dr.GetString(2));
-                        eventModel[i].EndTime = DateTime.Parse(dr.GetString(3));
+                        DateTime date = DateTime.Parse(dr.GetString(2));
+                        eventModel[i].StartTime = date.ToString("f", CultureInfo.CreateSpecificCulture("en-US"));
+                        date = DateTime.Parse(dr.GetString(3));
+                        eventModel[i].EndTime = date.ToString("f", CultureInfo.CreateSpecificCulture("en-US"));
                         eventModel[i].Description = dr.GetString(4);
-                        eventModel[i].EventURL = dr.GetString(5);
+                        eventModel[i].EventURL = "http://localhost:5500/videos/events" + dr.GetString(5);
+                        eventModel[i].imageURL = "http://localhost:5500/images/events"+dr.GetString(6);
                         i++;
                     }
                 }
