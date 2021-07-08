@@ -34,6 +34,7 @@ namespace TrainingLab.Services
                 }
                 else
                 {
+                    string s = Crypto.Encryptor.Encrypt(user.password);
                     cmd.CommandText = "INSERT INTO User(Name,EmailId,Password) VALUES('" + user.name + "','" + user.emailId + "','" + Crypto.Encryptor.Encrypt(user.password) + "')";
                     int rowsAffected = cmd.ExecuteNonQuery();
                     con.Close();
