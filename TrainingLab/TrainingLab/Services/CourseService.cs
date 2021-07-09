@@ -63,7 +63,7 @@ namespace TrainingLab.Services
                                 topicModel[j].topicId = int.Parse(sQLiteDataReader["Id"].ToString());
                                 topicModel[j].topicName = sQLiteDataReader["TopicName"].ToString();
                                 topicModel[j].videoURL = "http://localhost:5500/videos/courses" + sQLiteDataReader["VideoURL"].ToString();
-                                topicModel[j].notesURL = "http://localhost:5500/notes" + sQLiteDataReader["NotesURL"].ToString();
+                                topicModel[j].notesURL = sQLiteDataReader["NotesURL"].ToString();
                                 topicModel[j].chapterId = int.Parse(sQLiteDataReader["ChapterId"].ToString());
                                 j++;
                             }
