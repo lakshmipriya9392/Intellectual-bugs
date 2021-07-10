@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +16,13 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class CourseController : Controller
     {
-
+        public static IDistributedCache _distributedCache;
+        public static string recordKey;
+        public CourseController(IDistributedCache distributedCache)
+        {
+            _distributedCache = distributedCache;
+            //recordKey = "Course_" + DateTime.Now.ToString("yyyyMMdd_hh");
+        }
         [HttpGet]
         public async Task<IEnumerable> GetCourses(string id)
         {            
