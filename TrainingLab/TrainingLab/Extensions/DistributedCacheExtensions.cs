@@ -15,7 +15,7 @@ namespace TrainingLab.Extensions
             try
             {
                 var options = new DistributedCacheEntryOptions();
-                options.AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromMinutes(5);
+                options.AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromSeconds(60);
                 options.SlidingExpiration = unusedExpireTime;
                 var jsonData = JsonSerializer.Serialize(data);
                 await cache.SetStringAsync(recordId, jsonData, options);

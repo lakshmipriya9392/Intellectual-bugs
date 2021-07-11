@@ -206,15 +206,24 @@ namespace TrainingLab.Services
                 int i = 0, rowsAffected = 0;
                 while (i < questionnaireModels.Length)
                 {
+                    OptionModel optionModel =questionnaireModels[i].optionList;
                     cmd.CommandText = "INSERT INTO Questionnaire(QuestionText,TypeOfQuestion,CorrectAnswer,TestId) VALUES('" + questionnaireModels[i].question + "','" + questionnaireModels[i].typeOfQuestion + "','" + questionnaireModels[i].answer + "','" + questionnaireModels[i].testId + "')";
                     rowsAffected = cmd.ExecuteNonQuery();
                     if (rowsAffected < 0)
                     {
                         break;
                     }
+                    cmd.CommandText = "select Id from Questionnaire where QuestionText='" + questionnaireModels[i].question+"' and TestId='"+questionnaireModels[i].testId+"'";
+                    int questionId=int.Parse(cmd.ExecuteScalar().ToString());
+                    if (rowsAffected < 0)
+                    {
+                        break;
+                    }
+                    await PostOptions(optionModel,questionId);
                     i++;
                 }
                 con.Close();
+                cmd.Dispose();
                 if (rowsAffected > 0)
                 {
                     return true;
@@ -223,29 +232,25 @@ namespace TrainingLab.Services
             }
             catch(Exception e)
             {
+                con.Close();
+                cmd.Dispose();
                 return false;
             }
         }
 
-        public async Task<bool> PostOptions(OptionModel[] optionModels)
+        public async Task<bool> PostOptions(OptionModel optionModel,int questionId)
         {
             SQLiteCommand cmd = new SQLiteCommand();
             try
             {
                 cmd.Connection = con;
-                con.Open();
-                int i = 0, rowsAffected = 0;
-                while (i < optionModels.Length)
-                {
-                    cmd.CommandText = "INSERT INTO Options(OptionA,OptionB,OptionC,OptionD,QuestionId) VALUES('" + optionModels[i].optionA + "','" + optionModels[i].optionB + "','" + optionModels[i].optionC + "','" + optionModels[i].optionD + "','" + optionModels[i].questionId + "')";
+           
+                int  rowsAffected = 0;
+               
+                    cmd.CommandText = "INSERT INTO Options(OptionA,OptionB,OptionC,OptionD,QuestionId) VALUES('" + optionModel.optionA + "','" + optionModel.optionB + "','" + optionModel.optionC + "','" + optionModel.optionD + "','" + questionId + "')";
                     rowsAffected = cmd.ExecuteNonQuery();
-                    if (rowsAffected < 0)
-                    {
-                        break;
-                    }
-                    i++;
-                }
-                con.Close();
+              
+                cmd.Dispose();
                 if (rowsAffected > 0)
                 {
                     return true;
@@ -254,6 +259,8 @@ namespace TrainingLab.Services
             }
             catch(Exception e)
             {
+                con.Close();
+                cmd.Dispose();
                 return false;
             }
         }

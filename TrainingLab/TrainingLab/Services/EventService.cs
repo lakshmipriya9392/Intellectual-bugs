@@ -227,12 +227,12 @@ namespace TrainingLab.Services
                 return false;
             }
         }     
-        public bool AddAttendee([FromBody] EventModel eventModel)
+        public bool AddAttendee([FromBody] EventAttendeeModel eventAttendeeModel)
         {
             SQLiteCommand cmd = new SQLiteCommand();
             cmd.Connection = con;
             con.Open();
-            cmd.CommandText = "INSERT INTO EventAttendee(EmailId,EventId,Panelist) VALUES('" + eventModel.Attendee + "','" + eventModel.EventId + "','False')";
+            cmd.CommandText = "INSERT INTO EventAttendee(EmailId,EventId,Panelist) VALUES('" + eventAttendeeModel.emailId + "','" + eventAttendeeModel.eventId + "','False')";
             int rowsAffected = cmd.ExecuteNonQuery();
             
             con.Close();

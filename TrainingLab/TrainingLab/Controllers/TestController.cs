@@ -55,7 +55,7 @@ namespace TrainingLab.Controllers
             return Ok(new { result = "something gone wrong!" });
         }
 
-        [HttpPost("postOption")]
+       /* [HttpPost("postOption")]
         public async Task<IActionResult> PostOptions(OptionModel[] optionModels)
         {
             if (await TestService.Instance.PostOptions(optionModels))
@@ -63,6 +63,6 @@ namespace TrainingLab.Controllers
                 return Ok(new { result = "success" });
             }
             return Ok(new { result = "something gone wrong!" });
-        }
+        }*/
     }
 }
