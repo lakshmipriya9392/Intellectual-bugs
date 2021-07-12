@@ -25,9 +25,9 @@ namespace TrainingLab.Controllers
         }
 
         [HttpGet("FutureEvents")]
-        public async Task<IEnumerable<EventModel>>  GetFutureEvent()
+        public async Task<IEnumerable<EventModel>>  GetFutureEvent([FromQuery] string emailId)
         {
-            return await EventService.Instance.GetFutureEvents();
+            return await EventService.Instance.GetFutureEvents(emailId);
         }
 
        
@@ -64,6 +64,10 @@ namespace TrainingLab.Controllers
         [HttpPost("addattendee")]
         public IActionResult AddAttendee([FromBody] EventAttendeeModel eventAttendeeModel)
         {
+            if(eventAttendeeModel.eventId<0 || eventAttendeeModel.emailId==null)
+            {
+                return Ok(new { result = "Couldn't insert data" });
+            }
             if (EventService.Instance.AddAttendee(eventAttendeeModel))
             {
                 return Ok();

@@ -13,8 +13,8 @@ namespace TrainingLab.Models
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public string Description { get; set; }
-        public List<string> Panelists { get; set; }
         public int Attendee { get; set; }
         public string imageURL { get; set; }
+        public EventAttendeeModel attendeeModel { get; set; }
     }
 }

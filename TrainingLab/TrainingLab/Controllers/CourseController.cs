@@ -26,6 +26,7 @@ namespace TrainingLab.Controllers
         [HttpGet]
         public async Task<IEnumerable> GetCourses(string id)
         {            
+            
             return await CourseService.Instance.GetCourses(id);           
         }
 

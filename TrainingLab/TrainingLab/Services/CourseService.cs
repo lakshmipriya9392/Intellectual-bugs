@@ -43,7 +43,7 @@ namespace TrainingLab.Services
            // List<ChapterModel> chapterModels;
             loadLocation = null;
             string recordKey = CourseController.recordKey;
-            chapterModel = await cache.GetRecordAsync<List<ChapterModel>>(recordKey);
+            chapterModel = null;//await cache.GetRecordAsync<List<ChapterModel>>(recordKey);
             if (chapterModel is null)
             {
                 try
@@ -94,7 +94,7 @@ namespace TrainingLab.Services
                     loadLocation = "Loaded from API at" + DateTime.Now;
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
-                    await cache.SetRecordAsync(recordKey, chapterModel);
+                   // await cache.SetRecordAsync(recordKey, chapterModel);
                     return chapterModel;
                 }
                 catch (Exception e)
@@ -118,7 +118,7 @@ namespace TrainingLab.Services
             List<CourseModel> courseModel;
             loadLocation = null;
             string recordKey = CourseController.recordKey;
-            courseModel = await cache.GetRecordAsync<List<CourseModel>>(recordKey);
+            courseModel = null;//await cache.GetRecordAsync<List<CourseModel>>(recordKey);
             if (courseModel is null)
             {
                 try
@@ -148,7 +148,7 @@ namespace TrainingLab.Services
                     loadLocation = "Loaded from API at" + DateTime.Now;
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
-                    await cache.SetRecordAsync(recordKey, courseModel);
+                    //await cache.SetRecordAsync(recordKey, courseModel);
                     return courseModel;
                 }
                 catch (Exception e)
@@ -166,39 +166,7 @@ namespace TrainingLab.Services
             }
 
         }
-        /* public List<CourseModel> GetCourseDetails()
-         {
-             List<CourseModel> courseModel = new List<CourseModel>();
-             try
-             {
-                 SQLiteCommand cmd = new SQLiteCommand();
-                 cmd.Connection = con;
-                 cmd.CommandText = "select * from Course";
-                 con.Open();
-                 SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
-                 int i = 0;
-                 if (sQLiteDataReader.HasRows)
-                 {
-                     while (sQLiteDataReader.Read())
-                     {
-                         courseModel.Add(new CourseModel());
-                         courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
-                         courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
-                         courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
-                         courseModel[i].imageURL = "http://localhost:5500/images/courses" + sQLiteDataReader["ImageURL"].ToString();
-                         i++;
-                     }
-                 }
-                 sQLiteDataReader.Close();
-                 con.Close();
-                 cmd.Dispose();
-                 return courseModel;
-             }
-             catch(Exception e)
-             {
-                 return courseModel;
-             }
-         }*/
+       
 
 
         public bool AddChapter(ChapterModel chapterModel)
