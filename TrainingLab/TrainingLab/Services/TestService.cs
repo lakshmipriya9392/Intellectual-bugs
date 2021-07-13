@@ -125,7 +125,8 @@ namespace TrainingLab.Services
         }
 
         public static int score = 0;
-
+        public static int totalCorrectAnswer = 0;
+        public static int totalWrongAnswer = 0;
         public async Task<string> CheckAnswer(int id, string answer, string emailId)
         {
             SQLiteCommand cmd = new SQLiteCommand();
@@ -139,10 +140,12 @@ namespace TrainingLab.Services
                 if (correctAnswer.Equals(answer))
                 {
                     score++;
+                    totalCorrectAnswer++;
                     return "True";
                 }
                 else
-                {                    
+                {
+                    totalWrongAnswer++;
                     return correctAnswer;
                 }
             }
@@ -153,7 +156,7 @@ namespace TrainingLab.Services
 
         }
 
-        public async Task<bool> PostScore(int id, int score, string emailId)
+        public async Task<bool> PostScore(int id,string emailId)
         {
             SQLiteCommand cmd = new SQLiteCommand();
             try
@@ -164,7 +167,7 @@ namespace TrainingLab.Services
                 int rowsAffetcted = cmd.ExecuteNonQuery();
                 bool result=await UpgradeLevel(id, score, emailId);
                 con.Close();
-                return result;
+                return true;
             }
             catch(Exception e)
             {
@@ -188,7 +191,8 @@ namespace TrainingLab.Services
                 }
                 if(rowsAffetcted>0)
                     return true;
-                return false;
+                else
+                    return false;
             }
             catch(Exception e)
             {

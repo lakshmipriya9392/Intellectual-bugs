@@ -39,11 +39,11 @@ namespace TrainingLab.Controllers
         }
 
         [HttpPost("score")]
-        public async Task<IActionResult> PostScore(int id, int score, string emailId)
+        public async Task<IActionResult> PostScore(int id, string emailId)
         {
-            if (await TestService.Instance.PostScore(id, score, emailId))
+            if (await TestService.Instance.PostScore(id, emailId))
             {
-                return Ok(new { result = "success" });
+                return Ok(new { totalQuestion=TestService.totalCorrectAnswer+TestService.totalWrongAnswer,totalCorrectAnswer=TestService.totalCorrectAnswer,totalWrongAnswer=TestService.totalWrongAnswer,score=TestService.score });
             }
             return Ok(new { result = "something gone wrong!" });
         }
