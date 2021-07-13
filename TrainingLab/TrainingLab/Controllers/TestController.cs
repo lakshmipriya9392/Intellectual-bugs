@@ -27,11 +27,15 @@ namespace TrainingLab.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAnswer(int id, string answer, string emailId)
         {
-            if (await TestService.Instance.CheckAnswer(id, answer, emailId))
+            string checkAnswer = await TestService.Instance.CheckAnswer(id, answer, emailId);
+            if (checkAnswer == "True")
             {
                 return Ok(new { message = "CORRECT ANSWER!" });
             }
-            return Ok(new { message = "WRONG ANSWER!" });
+            else
+            {
+                return Ok(new { message = "WRONG ANSWER!",correctAnswer=checkAnswer });
+            }
         }
 
         [HttpPost("score")]

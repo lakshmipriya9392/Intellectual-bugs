@@ -64,7 +64,7 @@ namespace TrainingLab.Controllers
         [HttpPost("addattendee")]
         public IActionResult AddAttendee([FromBody] EventAttendeeModel eventAttendeeModel)
         {
-            if(eventAttendeeModel.eventId<0 || eventAttendeeModel.emailId==null)
+            if(eventAttendeeModel.eventId<=0 || eventAttendeeModel.emailId=="")
             {
                 return Ok(new { result = "Couldn't insert data" });
             }

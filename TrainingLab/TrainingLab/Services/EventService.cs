@@ -25,7 +25,6 @@ namespace TrainingLab.Services
 
             try
             {
-
                 cmd.Connection = con;
                 con.Open();
                 if (id == null)
@@ -64,7 +63,7 @@ namespace TrainingLab.Services
             }
             catch (Exception e)
             {
-                dr.Close();
+                //dr.Close();               
                 con.Close();
                 cmd.Dispose();
                 return eventModel;
@@ -115,7 +114,7 @@ namespace TrainingLab.Services
             }
             catch (Exception e)
             {
-                dr.Close();
+               // dr.Close();
                 con.Close();
                 cmd.Dispose();
                 return eventModel;
@@ -128,7 +127,6 @@ namespace TrainingLab.Services
             SQLiteDataReader dr2 = null;
             try
             {
-
                 cmdd.Connection = con;
                 cmdd.CommandText = "select u.Name,ea.Panelist from User u inner join EventAttendee ea on u.EmailId=ea.EmailId inner join Event e on e.Id=ea.EventId where e.Id='" + eventId + "'";
                 dr2 = cmdd.ExecuteReader();
@@ -159,7 +157,7 @@ namespace TrainingLab.Services
             catch (Exception e)
             {
                 cmdd.Dispose();
-                dr2.Close();
+               // dr2.Close();
                 eventModel[i].attendeeModel.Panelists = null;
                 eventModel[i].Attendee = 0;
             }
@@ -195,6 +193,8 @@ namespace TrainingLab.Services
             }
             catch (Exception e)
             {
+                con.Close();
+                cmd.Dispose();
                 return false;
             }
         }
@@ -259,7 +259,7 @@ namespace TrainingLab.Services
             {
                 return true;
             }
-            cmd.Dispose();
+            //cmd.Dispose();
             return false;
         }
     }

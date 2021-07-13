@@ -126,7 +126,7 @@ namespace TrainingLab.Services
 
         public static int score = 0;
 
-        public async Task<bool> CheckAnswer(int id, string answer, string emailId)
+        public async Task<string> CheckAnswer(int id, string answer, string emailId)
         {
             SQLiteCommand cmd = new SQLiteCommand();
             try
@@ -139,16 +139,16 @@ namespace TrainingLab.Services
                 if (correctAnswer.Equals(answer))
                 {
                     score++;
-                    return true;
+                    return "True";
                 }
                 else
-                {
-                    return false;
+                {                    
+                    return correctAnswer;
                 }
             }
             catch(Exception e)
             {
-                return false;
+                return "False";
             }
 
         }
