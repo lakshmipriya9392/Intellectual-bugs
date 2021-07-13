@@ -40,7 +40,6 @@ namespace TrainingLab.Services
         {
             List<ChapterModel> chapterModel;
             IDistributedCache cache = CourseController._distributedCache;
-           // List<ChapterModel> chapterModels;
             loadLocation = null;
             string recordKey = CourseController.recordKey;
             chapterModel = null;//await cache.GetRecordAsync<List<ChapterModel>>(recordKey);

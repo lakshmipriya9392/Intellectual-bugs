@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using TrainingLab.Controllers;
 using TrainingLab.Models;
 
 namespace TrainingLab.Services
@@ -15,18 +17,20 @@ namespace TrainingLab.Services
         private static Lazy<TestService> Initializer = new Lazy<TestService>(() => new TestService());
         public static TestService Instance => Initializer.Value;
         SQLiteConnection con = new SQLiteConnection("Data Source=" + Startup.connectionString);
-
-
+        private string loadLocation = "";
+        private string isCacheData = "";
         static int testId = 0;
 
         public async Task<IEnumerable> GetCourses(string id,string levelName)
         {
             if (id == null)
             {
+                TestController.recordKey = "TestCourse_" + DateTime.Now.ToString("yyyyMMdd_hh");
                 return  await GetCourseDetails();
             }
             else
             {
+                TestController.recordKey = "Questionnaire_" + DateTime.Now.ToString("yyyyMMdd_hh");
                 return  await GetQuestionnaires(id, levelName);
             }
         }
@@ -35,34 +39,52 @@ namespace TrainingLab.Services
         {
             SQLiteCommand cmd = new SQLiteCommand();
             List<CourseModel> courseModel = new List<CourseModel>();
-            try
+            IDistributedCache cache = CourseController._distributedCache;
+            loadLocation = null;
+            string recordKey = CourseController.recordKey;
+            courseModel = null;//await cache.GetRecordAsync<List<CourseModel>>(recordKey);
+            if (courseModel is null)
             {
-                cmd.Connection = con;
-                con.Open();
-                cmd.CommandText = "select * from Course";
-                SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
-                int i = 0;
-
-                if (sQLiteDataReader.HasRows)
+                try
                 {
-                    while (sQLiteDataReader.Read())
+                    cmd.Connection = con;
+                    con.Open();
+                    cmd.CommandText = "select * from Course";
+                    SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
+                    int i = 0;
+
+                    if (sQLiteDataReader.HasRows)
                     {
-                        courseModel.Add(new CourseModel());
-                        courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
-                        courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
-                        courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
-                        courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
-                        i++;
+                        while (sQLiteDataReader.Read())
+                        {
+                            courseModel.Add(new CourseModel());
+                            courseModel[i].courseId = int.Parse(sQLiteDataReader["Id"].ToString());
+                            courseModel[i].courseName = sQLiteDataReader["CourseName"].ToString();
+                            courseModel[i].authorName = sQLiteDataReader["AuthorName"].ToString();
+                            courseModel[i].imageURL = sQLiteDataReader["ImageURL"].ToString();
+                            i++;
+                        }
                     }
+                    sQLiteDataReader.Close();
+                    cmd.Dispose();
+                    con.Close();
+                    loadLocation = "Loaded from API at" + DateTime.Now;
+                    Console.WriteLine(loadLocation);
+                    isCacheData = "";
+                    // await cache.SetRecordAsync(recordKey, courseModel);
+                    return courseModel;
                 }
-                sQLiteDataReader.Close();
-                cmd.Dispose();
-                con.Close();
-                return courseModel;
+                catch (Exception e)
+                {
+                    con.Close();
+                    return courseModel;
+                }
             }
-            catch(Exception e)
+            else
             {
-                con.Close();
+                loadLocation = "Loaded from cache at" + DateTime.Now;
+                Console.WriteLine(loadLocation);
+                isCacheData = "data";
                 return courseModel;
             }
         }
@@ -70,56 +92,74 @@ namespace TrainingLab.Services
         public async Task<List<QuestionnaireModel>> GetQuestionnaires(string id, string levelName)
         {
             SQLiteCommand cmd = new SQLiteCommand();
-            List<QuestionnaireModel> questionnaireModel = new List<QuestionnaireModel>();
-            try
+            List<QuestionnaireModel> questionnaireModel;
+            IDistributedCache cache = CourseController._distributedCache;
+            loadLocation = null;
+            string recordKey = CourseController.recordKey;
+            questionnaireModel = null;//await cache.GetRecordAsync<List<QuestionnaireModel>>(recordKey);
+            if (questionnaireModel is null)
             {
-                cmd.Connection = con;
-                con.Open();
-                cmd.CommandText = "select q.Id,t.Id,l.LevelName,q.QuestionText,q.OptionList,q.TypeOfQuestion from Test t inner join Course c on c.Id=t.CourseId inner join Questionnaire q on t.Id=q.TestId inner join Level l on l.Id=t.LevelId where c.Id='" + id + "' and l.LevelName='" + levelName + "'";
-                SQLiteDataReader dr = cmd.ExecuteReader();
-                int i = 0;
-                
-                if (dr.HasRows)
+                try
                 {
-                    while (dr.Read())
+                    cmd.Connection = con;
+                    con.Open();
+                    cmd.CommandText = "select q.Id,t.Id,l.LevelName,q.QuestionText,q.OptionList,q.TypeOfQuestion from Test t inner join Course c on c.Id=t.CourseId inner join Questionnaire q on t.Id=q.TestId inner join Level l on l.Id=t.LevelId where c.Id='" + id + "' and l.LevelName='" + levelName + "'";
+                    SQLiteDataReader dr = cmd.ExecuteReader();
+                    int i = 0;
+                    questionnaireModel = new List<QuestionnaireModel>();
+                    if (dr.HasRows)
                     {
-                        questionnaireModel.Add(new QuestionnaireModel());
-                        questionnaireModel[i].questionId = dr.GetInt32(0);
-                        questionnaireModel[i].testId = dr.GetInt32(1);
-                        questionnaireModel[i].question = dr.GetString(3);
-                        questionnaireModel[i].typeOfQuestion = dr.GetString(5);
-
-                        SQLiteCommand cmdd = new SQLiteCommand();
-                        cmdd.Connection = con;
-
-                        cmdd.CommandText = "select * from Options where QuestionId='" + questionnaireModel[i].questionId + "'";
-                        SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
-                        OptionModel optionModel = new OptionModel();
-                        if (sQLiteDataReader.HasRows)
+                        while (dr.Read())
                         {
-                            while (sQLiteDataReader.Read())
+                            questionnaireModel.Add(new QuestionnaireModel());
+                            questionnaireModel[i].questionId = dr.GetInt32(0);
+                            questionnaireModel[i].testId = dr.GetInt32(1);
+                            questionnaireModel[i].question = dr.GetString(3);
+                            questionnaireModel[i].typeOfQuestion = dr.GetString(5);
+
+                            SQLiteCommand cmdd = new SQLiteCommand();
+                            cmdd.Connection = con;
+
+                            cmdd.CommandText = "select * from Options where QuestionId='" + questionnaireModel[i].questionId + "'";
+                            SQLiteDataReader sQLiteDataReader = cmdd.ExecuteReader();
+                            OptionModel optionModel = new OptionModel();
+                            if (sQLiteDataReader.HasRows)
                             {
-                                optionModel.optionA = sQLiteDataReader.GetString(1);
-                                optionModel.optionB = sQLiteDataReader.GetString(2);
-                                optionModel.optionC = sQLiteDataReader.GetString(3);
-                                optionModel.optionD = sQLiteDataReader.GetString(4);
-                                optionModel.questionId = sQLiteDataReader.GetInt32(5);
+                                while (sQLiteDataReader.Read())
+                                {
+                                    optionModel.optionA = sQLiteDataReader.GetString(1);
+                                    optionModel.optionB = sQLiteDataReader.GetString(2);
+                                    optionModel.optionC = sQLiteDataReader.GetString(3);
+                                    optionModel.optionD = sQLiteDataReader.GetString(4);
+                                    optionModel.questionId = sQLiteDataReader.GetInt32(5);
+                                }
                             }
+                            sQLiteDataReader.Close();
+                            cmdd.Dispose();
+                            questionnaireModel[i].optionList = optionModel;
+                            i++;
                         }
-                        sQLiteDataReader.Close();
-                        cmdd.Dispose();
-                        questionnaireModel[i].optionList = optionModel;
-                        i++;
                     }
+                    dr.Close();
+                    cmd.Dispose();
+                    con.Close();
+                    loadLocation = "Loaded from API at" + DateTime.Now;
+                    Console.WriteLine(loadLocation);
+                    isCacheData = "";
+                    // await cache.SetRecordAsync(recordKey, questionnaireModel);
+                    return questionnaireModel;
                 }
-                dr.Close();
-                cmd.Dispose();
-                con.Close();
-                return questionnaireModel;
+                catch (Exception e)
+                {
+                    con.Close();
+                    return questionnaireModel;
+                }
             }
-            catch(Exception e)
+            else
             {
-                con.Close();
+                loadLocation = "Loaded from cache at" + DateTime.Now;
+                Console.WriteLine(loadLocation);
+                isCacheData = "data";
                 return questionnaireModel;
             }
         }
@@ -167,6 +207,9 @@ namespace TrainingLab.Services
                 int rowsAffetcted = cmd.ExecuteNonQuery();
                 bool result=await UpgradeLevel(id, score, emailId);
                 con.Close();
+                score = 0;
+                totalWrongAnswer = 0;
+                totalCorrectAnswer = 0;
                 return true;
             }
             catch(Exception e)
