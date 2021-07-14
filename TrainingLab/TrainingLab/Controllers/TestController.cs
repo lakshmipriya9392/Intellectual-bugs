@@ -28,11 +28,16 @@ namespace TrainingLab.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable> Get([FromQuery] string id, [FromQuery] string levelName)
+        public async Task<IEnumerable> GetCourses([FromQuery] string id, [FromQuery] string levelName)
         {
             return await TestService.Instance.GetCourses(id, levelName);
         }
 
+        [HttpGet("getlevels")]
+        public async Task<IEnumerable> GetLevels()
+        {
+            return await TestService.Instance.GetLevels();
+        }
         [HttpPost]
         public async Task<IActionResult> PostAnswer(int id, string answer, string emailId)
         {

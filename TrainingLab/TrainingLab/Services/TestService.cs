@@ -36,6 +36,60 @@ namespace TrainingLab.Services
             }
         }
 
+        public async Task<IEnumerable> GetLevels()
+        {
+            SQLiteCommand cmd = new SQLiteCommand();
+            TestController.recordKey = "Level_" + DateTime.Now.ToString("yyyyMMdd_hh");
+            List<LevelModel> levelModels;
+            IDistributedCache cache = TestController._distributedCache;
+            loadLocation = null;
+            string recordKey = TestController.recordKey;
+            //Getting data from cache
+            levelModels = null;
+            //levelModels= await cache.GetRecordAsync<List<LevelModel>>(recordKey);
+            if (levelModels is null)
+            {
+                try
+                {
+                    cmd.Connection = con;
+                    con.Open();
+                    cmd.CommandText = "select * from Level";
+                    SQLiteDataReader sQLiteDataReader = cmd.ExecuteReader();
+                    int i = 0;
+                    levelModels = new List<LevelModel>();
+                    if (sQLiteDataReader.HasRows)
+                    {
+                        while (sQLiteDataReader.Read())
+                        {
+                            levelModels.Add(new LevelModel());
+                            levelModels[i].levelId = sQLiteDataReader.GetInt32(0);
+                            levelModels[i].levelName = sQLiteDataReader.GetString(1);
+                            i++;
+                        }
+                    }
+                    sQLiteDataReader.Close();
+                    cmd.Dispose();
+                    con.Close();
+                    loadLocation = "Loaded from API at" + DateTime.Now;
+                    Console.WriteLine(loadLocation);
+                    isCacheData = "";
+                    //Setting data in cache
+                    //await cache.SetRecordAsync(recordKey, levelModels);
+                    return levelModels;
+                }
+                catch (Exception e)
+                {
+                    return levelModels;
+                }
+            }
+            else
+            {
+                loadLocation = "Loaded from cache at" + DateTime.Now;
+                Console.WriteLine(loadLocation);
+                isCacheData = "data";
+                return levelModels;
+            }
+        }
         public async Task<List<CourseModel>> GetCourseDetails()
         {
             SQLiteCommand cmd = new SQLiteCommand();
@@ -44,7 +98,8 @@ namespace TrainingLab.Services
             loadLocation = null;
             string recordKey = TestController.recordKey;
             //Getting data from cache
-            courseModel = await cache.GetRecordAsync<List<CourseModel>>(recordKey);
+            courseModel = null;
+                //courseModel=await cache.GetRecordAsync<List<CourseModel>>(recordKey);
             if (courseModel is null)
             {
                 try
@@ -74,7 +129,7 @@ namespace TrainingLab.Services
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
                     //Setting data in cache
-                    await cache.SetRecordAsync(recordKey, courseModel);
+                    //await cache.SetRecordAsync(recordKey, courseModel);
                     return courseModel;
                 }
                 catch (Exception e)
@@ -100,7 +155,8 @@ namespace TrainingLab.Services
             loadLocation = null;
             string recordKey = TestController.recordKey;
             //Getting data from cache
-            questionnaireModel = await cache.GetRecordAsync<List<QuestionnaireModel>>(recordKey);
+            questionnaireModel = null;
+               // questionnaireModel=await cache.GetRecordAsync<List<QuestionnaireModel>>(recordKey);
             if (questionnaireModel is null)
             {
                 try
@@ -157,7 +213,7 @@ namespace TrainingLab.Services
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
                     //Setting data in cache
-                    await cache.SetRecordAsync(recordKey, questionnaireModel);
+                   // await cache.SetRecordAsync(recordKey, questionnaireModel);
                     return questionnaireModel;
                 }
                 catch (Exception e)
