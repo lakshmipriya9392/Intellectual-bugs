@@ -16,6 +16,7 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class CourseController : Controller
     {
+        //for redis cache
         public static IDistributedCache _distributedCache;
         public static string recordKey;
         public CourseController(IDistributedCache distributedCache)
@@ -25,8 +26,7 @@ namespace TrainingLab.Controllers
         }
         [HttpGet]
         public async Task<IEnumerable> GetCourses(string id)
-        {            
-            
+        {                        
             return await CourseService.Instance.GetCourses(id);           
         }
 

@@ -9,18 +9,12 @@ namespace Crypto
     {
         static string key { get; set; } = "A!9HHhi%XjjYY4YP2@Nob009X";
 
+        //Encrypting the text
         public static string Encrypt(string text)
         {
             using (MD5 md5Hash = MD5.Create())
 
             {
-                //byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(text));
-                //StringBuilder sBuilder = new StringBuilder();
-                //for (int i = 0; i < (data.Length); i++)
-                //{
-                //    sBuilder.Append(data[i].ToString("x2"));
-                //}
-                //return sBuilder.ToString();
                 using (var md5 = new MD5CryptoServiceProvider())
                 {
                     using (var tdes = new TripleDESCryptoServiceProvider())

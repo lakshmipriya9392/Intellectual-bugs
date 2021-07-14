@@ -9,6 +9,7 @@ using TrainingLab.Models;
 using System.Text;
 using TrainingLab.Services;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace TrainingLab.Controllers
 {
@@ -16,31 +17,51 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
-       
-      
+             
         //signup
         [HttpPost]
         [Route("signup")]
         public IActionResult SignUp([FromBody] UserModel userModel)
-        {            
-            if(UserService.Instance.SignUp(userModel))
+        {try
             {
-                return Ok(new { result = "True" });
+                if (UserService.Instance.SignUp(userModel))
+                {
+                    return Ok(new
+                    {
+                        result = "True"
+                    });
+                }
+                return Ok(new
+                {
+                    result = "False",
+                    message = "User with such email already exists!"
+                });
             }
-            return Ok(new { result = "False", message = "User with such email already exists!" });         
+            catch (Exception e) { return Ok(e); }
         }
 
         //signin
         [HttpPost]
         [Route("login")]
         public IActionResult SignIn([FromBody] UserModel userModel)
-        {
-            string result = UserService.Instance.SignIn(userModel);
-            if(result==null)
+        {try
             {
-                return Ok(new { result = "False", message = "Invalid Email or Password!" });
+                string result = UserService.Instance.SignIn(userModel);
+                if (result == null)
+                {
+                    return Ok(new
+                    {
+                        result = "False",
+                        message = "Invalid Email or Password!"
+                    });
+                }
+                return Ok(new
+                {
+                    result = "True",
+                    name = result
+                });
             }
-            return Ok(new { result = "True",name=result});            
+            catch (Exception e) { return Ok(e); }
         }
     }
 }

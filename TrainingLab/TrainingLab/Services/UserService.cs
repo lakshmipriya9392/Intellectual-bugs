@@ -43,6 +43,8 @@ namespace TrainingLab.Services
             }
             catch(Exception e)
             {
+                cmd.Dispose();
+                con.Close();
                 return false;
             }
         }
@@ -71,6 +73,8 @@ namespace TrainingLab.Services
             }
             catch(Exception e)
             {
+                cmd.Dispose();
+                con.Close();
                 return null;
             }
         }

@@ -9,7 +9,7 @@ namespace TrainingLab.Extensions
 {
     public static class DistributedCacheExtensions
     {
-
+        //Setting data in cache
         public static async Task SetRecordAsync<T> (this IDistributedCache cache,string recordId,T data,TimeSpan? absoluteExpireTime=null,TimeSpan? unusedExpireTime=null)
         {
             try
@@ -26,6 +26,7 @@ namespace TrainingLab.Extensions
             }
         }
 
+        //Getting data from cache
         public static async Task<T> GetRecordAsync<T>(this IDistributedCache cache, string recordId)
         {
             try

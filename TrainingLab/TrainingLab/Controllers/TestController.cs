@@ -18,6 +18,7 @@ namespace TrainingLab.Controllers
     [Route("[controller]")]
     public class TestController : Controller
     {
+        //for redis cache
         public static IDistributedCache _distributedCache;
         public static string recordKey;
         public TestController(IDistributedCache distributedCache)
@@ -35,46 +36,64 @@ namespace TrainingLab.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAnswer(int id, string answer, string emailId)
         {
-            string checkAnswer = await TestService.Instance.CheckAnswer(id, answer, emailId);
-            if (checkAnswer == "True")
+            try
             {
-                return Ok(new { message = "CORRECT ANSWER!" });
+                string checkAnswer = await TestService.Instance.CheckAnswer(id, answer, emailId);
+                if (checkAnswer == "True")
+                {
+                    return Ok(new { message = "CORRECT ANSWER!" });
+                }
+                else
+                {
+                    return Ok(new { message = "WRONG ANSWER!", correctAnswer = checkAnswer });
+                }
             }
-            else
+            catch(Exception e)
             {
-                return Ok(new { message = "WRONG ANSWER!",correctAnswer=checkAnswer });
+                return Ok(e);
             }
         }
 
         [HttpPost("score")]
         public async Task<IActionResult> PostScore(int id, string emailId)
         {
-            if (await TestService.Instance.PostScore(id, emailId))
+            try
             {
-                return Ok(new { totalQuestion=TestService.totalCorrectAnswer+TestService.totalWrongAnswer,totalCorrectAnswer=TestService.totalCorrectAnswer,totalWrongAnswer=TestService.totalWrongAnswer,score=TestService.score });
+                if (await TestService.Instance.PostScore(id, emailId))
+                {
+                    int totalCorrectAnswer = TestService.totalCorrectAnswer;
+                    int totalWrongAnswer = TestService.totalWrongAnswer;
+                    int score = TestService.score;
+                    TestService.totalCorrectAnswer = 0;
+                    TestService.totalWrongAnswer = 0;
+                    TestService.score = 0;
+                    return Ok(new { totalQuestion = totalCorrectAnswer + totalWrongAnswer, totalCorrectAnswer = totalCorrectAnswer, totalWrongAnswer = totalWrongAnswer, score = score });
+                }
+                return Ok(new { result = "something gone wrong!" });
             }
-            return Ok(new { result = "something gone wrong!" });
+            catch(Exception e)
+            {
+                return Ok(e);
+            }
         }
 
 
         [HttpPost("postQuestion")]
         public async Task<IActionResult> PostQuestion(QuestionnaireModel[] questionnaireModels)
         {
-            if (await TestService.Instance.PostQuestion(questionnaireModels))
+            try
             {
-                return Ok(new { result = "success" });
+                if (await TestService.Instance.PostQuestion(questionnaireModels))
+                {
+                    return Ok(new { result = "success" });
+                }
+                return Ok(new { result = "something gone wrong!" });
             }
-            return Ok(new { result = "something gone wrong!" });
+            catch(Exception e)
+            {
+                return Ok(e);
+            }
         }
 
-       /* [HttpPost("postOption")]
-        public async Task<IActionResult> PostOptions(OptionModel[] optionModels)
-        {
-            if (await TestService.Instance.PostOptions(optionModels))
-            {
-                return Ok(new { result = "success" });
-            }
-            return Ok(new { result = "something gone wrong!" });
-        }*/
     }
 }

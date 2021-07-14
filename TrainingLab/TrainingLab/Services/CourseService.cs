@@ -42,7 +42,8 @@ namespace TrainingLab.Services
             IDistributedCache cache = CourseController._distributedCache;
             loadLocation = null;
             string recordKey = CourseController.recordKey;
-            chapterModel = null;//await cache.GetRecordAsync<List<ChapterModel>>(recordKey);
+            //Getting data from cache
+            chapterModel = null;// await cache.GetRecordAsync<List<ChapterModel>>(recordKey);
             if (chapterModel is null)
             {
                 try
@@ -93,7 +94,8 @@ namespace TrainingLab.Services
                     loadLocation = "Loaded from API at" + DateTime.Now;
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
-                   // await cache.SetRecordAsync(recordKey, chapterModel);
+                    //Setting data in cache
+                    //await cache.SetRecordAsync(recordKey, chapterModel);
                     return chapterModel;
                 }
                 catch (Exception e)
@@ -117,7 +119,8 @@ namespace TrainingLab.Services
             List<CourseModel> courseModel;
             loadLocation = null;
             string recordKey = CourseController.recordKey;
-            courseModel = null;//await cache.GetRecordAsync<List<CourseModel>>(recordKey);
+            //Getting data from cache
+            courseModel = null;// await cache.GetRecordAsync<List<CourseModel>>(recordKey);
             if (courseModel is null)
             {
                 try
@@ -147,6 +150,7 @@ namespace TrainingLab.Services
                     loadLocation = "Loaded from API at" + DateTime.Now;
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
+                    //Setting data in cache
                     //await cache.SetRecordAsync(recordKey, courseModel);
                     return courseModel;
                 }
@@ -188,6 +192,7 @@ namespace TrainingLab.Services
             catch (Exception e)
             {
                 cmd.Dispose();
+                con.Close();
                 return false;
             }
 
@@ -212,6 +217,7 @@ namespace TrainingLab.Services
             catch (Exception e)
             {
                 cmd.Dispose();
+                con.Close();
                 return false;
             }
 
@@ -237,6 +243,7 @@ namespace TrainingLab.Services
             catch (Exception e)
             {
                 cmd.Dispose();
+                con.Close();
                 return false;
             }
         }
@@ -261,6 +268,7 @@ namespace TrainingLab.Services
             catch (Exception e)
             {
                 cmd.Dispose();
+                con.Close();
                 return false;
             }
         }
