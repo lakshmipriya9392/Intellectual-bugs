@@ -44,7 +44,7 @@ namespace TrainingLab.Services
             loadLocation = null;
             string recordKey = TestController.recordKey;
             //Getting data from cache
-            courseModel = null;//await cache.GetRecordAsync<List<CourseModel>>(recordKey);
+            courseModel = await cache.GetRecordAsync<List<CourseModel>>(recordKey);
             if (courseModel is null)
             {
                 try
@@ -74,7 +74,7 @@ namespace TrainingLab.Services
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
                     //Setting data in cache
-                    //await cache.SetRecordAsync(recordKey, courseModel);
+                    await cache.SetRecordAsync(recordKey, courseModel);
                     return courseModel;
                 }
                 catch (Exception e)
@@ -100,7 +100,7 @@ namespace TrainingLab.Services
             loadLocation = null;
             string recordKey = TestController.recordKey;
             //Getting data from cache
-            questionnaireModel = null;// await cache.GetRecordAsync<List<QuestionnaireModel>>(recordKey);
+            questionnaireModel = await cache.GetRecordAsync<List<QuestionnaireModel>>(recordKey);
             if (questionnaireModel is null)
             {
                 try
@@ -157,7 +157,7 @@ namespace TrainingLab.Services
                     Console.WriteLine(loadLocation);
                     isCacheData = "";
                     //Setting data in cache
-                    //await cache.SetRecordAsync(recordKey, questionnaireModel);
+                    await cache.SetRecordAsync(recordKey, questionnaireModel);
                     return questionnaireModel;
                 }
                 catch (Exception e)
