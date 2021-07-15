@@ -58,7 +58,14 @@ namespace TrainingLab.Controllers
                 return Ok(e);
             }
         }
-
+        [HttpPost("clearScore")]
+        public IActionResult ClearScore()
+        {
+            TestService.totalCorrectAnswer = 0;
+            TestService.totalWrongAnswer = 0;
+            TestService.score = 0;
+            return Ok();
+        }
         [HttpPost("score")]
         public async Task<IActionResult> PostScore(int id, string emailId)
         {
@@ -68,10 +75,7 @@ namespace TrainingLab.Controllers
                 {
                     int totalCorrectAnswer = TestService.totalCorrectAnswer;
                     int totalWrongAnswer = TestService.totalWrongAnswer;
-                    int score = TestService.score;
-                    TestService.totalCorrectAnswer = 0;
-                    TestService.totalWrongAnswer = 0;
-                    TestService.score = 0;
+                    int score = TestService.score;                    
                     return Ok(new { totalQuestion = totalCorrectAnswer + totalWrongAnswer, totalCorrectAnswer = totalCorrectAnswer, totalWrongAnswer = totalWrongAnswer, score = score });
                 }
                 return Ok(new { result = "something gone wrong!" });

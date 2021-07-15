@@ -155,7 +155,7 @@ namespace TrainingLab.Services
             loadLocation = null;
             string recordKey = TestController.recordKey;
             //Getting data from cache
-            questionnaireModel = null;
+            questionnaireModel = null;            
                // questionnaireModel=await cache.GetRecordAsync<List<QuestionnaireModel>>(recordKey);
             if (questionnaireModel is null)
             {
